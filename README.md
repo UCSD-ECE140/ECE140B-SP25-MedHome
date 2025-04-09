@@ -21,16 +21,19 @@ Week 4
   - UI elements for landing page, user page, and vitals data established
 - Schematics
   - Device/Sensor circuit layout and microcontroller wiring (esp32)
+ 
 Week 6
 - Website
   - User login/authentication, database established with visual representation of vitals data
 - Electronics
   - Wiring devices to microcontroller using SPI and I2C protocols, Wifi setup on ESP32
+
 Week 8
 - Website
   - Device connection/registration from user to user and allow for snapshot uploads from device readings
 - Electronics
   - Creating circuit boards using perfboards or PCB, MQTT integration, mounting devices onto chair
+  
 Week 10
 - Website
   - Final deployment and testing of features
