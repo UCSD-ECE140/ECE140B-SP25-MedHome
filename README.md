@@ -13,3 +13,26 @@ The required technology should be fairly simple. For electronics we need three m
 
 
 ### What market can you reach out to? <br>
+There are two markets that we are looking into, one being for those who need frequent doctor visits, including those who are either susceptible to illnesses or are elderly and wish to have consistent health tracking. For this market, this would save trips to the doctor since they will have no need to schedule appointments and travel in order to get a small checkup. The second market we can reach out to are health clinics, especially with those who have a high volume of patients, to speed up the checkin process since they can have their patients use the MedHome device to give the doctor health information without the need to have a doctor do vitals checks one at a time.
+
+### Biweekly Check-in
+Week 4
+- Skeleton Website
+  - UI elements for landing page, user page, and vitals data established
+- Schematics
+  - Device/Sensor circuit layout and microcontroller wiring (esp32)
+Week 6
+- Website
+  - User login/authentication, database established with visual representation of vitals data
+- Electronics
+  - Wiring devices to microcontroller using SPI and I2C protocols, Wifi setup on ESP32
+Week 8
+- Website
+  - Device connection/registration from user to user and allow for snapshot uploads from device readings
+- Electronics
+  - Creating circuit boards using perfboards or PCB, MQTT integration, mounting devices onto chair
+Week 10
+- Website
+  - Final deployment and testing of features
+- Electronics
+  - Debugging final product
