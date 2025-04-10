@@ -1,4 +1,4 @@
-# ECE1421-SP25-MedHome
+# ECE141B-SP25-MedHome
 
 ### What will the ideal product look like? <br>
 The ideal product would look like a medical instrument measurement device that is integrated into a chair. This device would take an oximeter, blood pressure monitor, and scale, to track vitals such as blood pressure, heart rate, oxygen levels, and weight. This data will then be fed into a database along with the user's username and or personal ID so the user will be able to access their vitals and various statistics with graphs to show trends in the user's vitals over time. On the web app This data will then be fed into an LLM API that can interpret the trends and find any malignant trends and notifies the user aboout them. The user then will have the option to consult a doctor if there is a serious health issue detected. 
