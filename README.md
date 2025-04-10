@@ -40,10 +40,22 @@ Week 10
 - Hardware: 
   - Debugging final product
  
-  ### Parts List
+  # Parts List
   <a href = "https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing" target = "_blank">
   https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing
 
+# Iru Kumi's
+Week 2: <br>
+Who is the customer? <br>
+The target market would be people who need constant checkups, such as the elderly or those with underlying health issues. This means our product would really be focused on medical institutions such as nursing homes or hospitals, while also working with insurance companies and complying with any health laws or acts.  <br>
 
+What is their need? <br>
+The customer need is to have a quick, reliable, and efficient way to take and track their vitals. Additionally it will allow customers to track their health data and allow for data analysis which can then recognize and inform of any potential health complications. <br>
+
+What is the problem our idea will address? <br>
+The problem we are addressing is reducing overall time consumption of a simple check in and preventing data waste (i.e. ensuring patient data is saved, tracked, and analyzed consistently). <br>
+
+How is our solution IOT worthy? <br>
+Our solution is IOT worthy as it makes use of medical instruments that measure vitals such as oximeters, blood pressure monitors, and scales, in conjuction with a central system that is able to send data to a database for easy tracking and analysis which is essential for ones health. <br>
 
 
