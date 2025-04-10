@@ -39,6 +39,10 @@ Week 10
   - Final deployment and testing of features
 - Hardware: 
   - Debugging final product
+ 
+  ### Parts List
+  <a href = "https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing">
+  https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing
 
 
 
