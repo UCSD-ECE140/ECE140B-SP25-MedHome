@@ -1,45 +1,128 @@
-# ECE141B-SP25-MedHome
+# 🏠💉 ECE140B-SP25: MedHome – Smart Health Chair
 
-### What will the ideal product look like? <br>
-The ideal product would look like a medical instrument measurement device that is integrated into a chair. This device would take an oximeter, blood pressure monitor, and scale, to track vitals such as blood pressure, heart rate, oxygen levels, and weight. This data will then be fed into a database along with the user's username and or personal ID so the user will be able to access their vitals and various statistics with graphs to show trends in the user's vitals over time. On the web app This data will then be fed into an LLM API that can interpret the trends and find any malignant trends and notifies the user aboout them. The user then will have the option to consult a doctor if there is a serious health issue detected. 
+Welcome to **MedHome**, a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic! This project is being developed for UCSD's ECE140B (Spring 2025) and aims to provide accessible, real-time health monitoring with the help of IoT and AI. 🚀
 
+---
 
-### What will the MVP for a quarter look like? <br>
-The minimum value product will be a basic device that uses instruments such as an oximeter, scale, and blood pressure monitor, that communicate to a central microcontroller like an ESP32. The ESP32 can then send data to our application using WiFi. On the backened we will have a database that stores data like the user information and the health data measurements. On the web application the users can interact with their data to check in on their health. 
+## 🌟 Ideal Product Vision
 
+Imagine a chair that doubles as a medical diagnostic device. The **ideal MedHome system** integrates:
 
-### What will the required technology look like? <br>
-The required technology should be fairly simple. For electronics we need three medical instruments and or sensors if we decide to make our own including an oximeter, scale, and blood pressure monitor. Then we would need a microcontroller preferrably an ESP32 as this has WiFi. We can then use different communication protocols (SPI, I2C, Can Bus, UART) to allow the ESP32 to gather data from the devices. On the backened we will have a database to store the health data in tables using various schemas. With WiFi we can use MQTT protocol to allow our data to be sent to the database using topics to specifiy what tables in the database we would need to add the data to. We would create a simple web application that allows users to see and interact with their data through graphs. We can use LLM API's to give feedback on the users health data. Users will also have an option to consult with a doctor if they prefer that.
+🩸 **Blood Pressure Monitor**  
+🧠 **Oximeter (O2 and Heart Rate)**  
+⚖️ **Digital Scale**  
 
+All collected data is:
 
-### What market can you reach out to? <br>
-There are two markets that we are looking into, one being for those who need frequent doctor visits, including those who are either susceptible to illnesses or are elderly and wish to have consistent health tracking. For this market, this would save trips to the doctor since they will have no need to schedule appointments and travel in order to get a small checkup. The second market we can reach out to are health clinics, especially with those who have a high volume of patients, to speed up the checkin process since they can have their patients use the MedHome device to give the doctor health information without the need to have a doctor do vitals checks one at a time.
+- 📡 Transmitted via WiFi (Raspberry Pi)
+- 💽 Stored in a backend database
+- 📊 Visualized on a sleek web app
+- 🧠 Interpreted by an LLM API for anomaly detection
+- 👨‍⚕️ Used to notify the user and optionally consult a doctor
 
-### Biweekly Check-in
-Week 4/5
-- Software
-  - Website: Create website skeleton i.e. add UI elements for landing page, user page, and vitals data established
-- Hardware
-  - Create circuit schematics for device/sensor layouts and microcontroller wiring (ESP32)
- 
-Week 6/7
-- Software: 
-  - Add user login/authentication, database established with visual representation of vitals data, WiFi setup on ESP32 and testing MQTT protocol to send data
-- Hardware:
-  - Wiring devices to microcontroller using SPI and I2C protocols, create chair design to integrate electronics into
-    
-Week 8/9
-- Software: 
-  - Device connection/registration and allow for snapshot uploads from device readings, continue working on data management
-- Hardware: 
-  - Ensure electronics are all working then consolidate using perfboards or PCB's, mount integrated chair design onto chair
-  
-Week 10
-- Software: 
-  - Final deployment and testing of features
-- Hardware: 
-  - Debugging final product
+---
 
+## 🔨 MVP (Minimum Viable Product)
+
+For this quarter, our MVP includes:
+
+### ✅ Hardware
+- Raspberry Pi microcontroller
+- Connected oximeter, scale, and BP monitor
+- Basic frame or chair mount for all devices
+
+### ✅ Software
+- Raspberry Pi sends data via MQTT over WiFi
+- Backend stores user & health data
+- Web app displays vitals & graphs
+- Basic user authentication & login
+
+---
+
+## 🧰 Required Technologies
+
+### 📟 Electronics
+- Oximeter
+- Scale
+- Blood Pressure Monitor
+- Raspberry Pi (for WiFi & sensor integration)
+- Communication protocols: SPI / I2C / UART
+
+### 🌐 Software
+- MQTT for real-time data transport
+- Database (SQL or NoSQL) for storage
+- Web App (HTML/CSS/JS, React, or Flask/Node/FastAPI)
+- LLM API (e.g., OpenAI or similar) to analyze trends
+- Optional: Doctor consultation interface
+
+---
+
+## 🎯 Target Market
+
+We aim to help two key groups:
+
+1. 👵 **Elderly or At-Risk Individuals**  
+   For remote, consistent vital monitoring — skipping unnecessary clinic trips.
+
+2. 🏥 **Health Clinics with High Patient Volumes**  
+   To streamline check-ins and reduce manual vital checks during visits.
+
+---
+
+## 📆 Biweekly Check-In Plan
+
+### 🗓️ Week 4–5
+- **Software**:  
+  - Set up website skeleton: landing page, user page, vitals dashboard  
+- **Hardware**:  
+  - Draft circuit schematics and wiring plans (ESP32 + sensors)
+
+---
+
+### 🗓️ Week 6–7
+- **Software**:  
+  - Implement user login/auth system  
+  - Build database schemas + integrate graphing for vitals  
+  - Begin WiFi/MQTT testing with ESP32  
+- **Hardware**:  
+  - Start wiring sensors using SPI/I2C  
+  - Design chair layout for electronics integration
+
+---
+
+### 🗓️ Week 8–9
+- **Software**:  
+  - Enable device registration and data uploads  
+  - Continue backend development & data management  
+- **Hardware**:  
+  - Test all devices + consolidate on perfboard or PCB  
+  - Finalize mounting on the chair
+
+---
+
+### 🗓️ Week 10
+- **Software**:  
+  - Final testing & deployment of website + ESP32 system  
+- **Hardware**:  
+  - Final debugging of full chair setup  
+
+---
+
+## 🙌 Contributors
+
+- Carlos Guerrero  
+- Anton John Del Mar
+- Nathaniel Hernandez
+
+---
+
+## 📌 Project Status
+
+> 🚧 Actively being developed (Spring 2025)
+
+Want to follow the journey? Star this repo and check back for updates!
+
+---
 
 # Parts List
 <a href = "https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing" target = "_blank">
