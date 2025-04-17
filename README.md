@@ -78,7 +78,7 @@ We aim to help two key groups:
 - **Software**:  
   - Set up website skeleton: landing page, user page, vitals dashboard  
 - **Hardware**:  
-  - Draft circuit schematics and wiring plans (ESP32 + sensors)
+  - Draft circuit schematics and wiring plans (Raspberry Pi + sensors)
 
 ---
 
@@ -86,7 +86,7 @@ We aim to help two key groups:
 - **Software**:  
   - Implement user login/auth system  
   - Build database schemas + integrate graphing for vitals  
-  - Begin WiFi/MQTT testing with ESP32  
+  - Begin WiFi/MQTT testing with Raspberry Pi 
 - **Hardware**:  
   - Start wiring sensors using SPI/I2C  
   - Design chair layout for electronics integration
@@ -105,7 +105,7 @@ We aim to help two key groups:
 
 ### 🗓️ Week 10
 - **Software**:  
-  - Final testing & deployment of website + ESP32 system  
+  - Final testing & deployment of website + Raspberry Pi system  
 - **Hardware**:  
   - Final debugging of full chair setup  
 
