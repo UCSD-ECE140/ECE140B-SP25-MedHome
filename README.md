@@ -118,6 +118,9 @@ We aim to help two key groups:
 
 ## 📌 Project Status
 
+### Wiring Diagrams
+![image](https://github.com/user-attachments/assets/816134a4-8f80-43ed-8bed-1a683591c899)
+
 > 🚧 Actively being developed (Spring 2025)
 
 Want to follow the journey? Star this repo and check back for updates!
