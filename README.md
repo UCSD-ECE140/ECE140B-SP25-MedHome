@@ -48,6 +48,9 @@ For this quarter, our MVP includes:
 - Raspberry Pi (for WiFi & sensor integration)
 - Communication protocols: SPI / I2C / UART
 
+### 🔌Wiring Diagrams
+![image](https://github.com/user-attachments/assets/816134a4-8f80-43ed-8bed-1a683591c899)
+
 ### 🌐 Software
 - MQTT for real-time data transport
 - Database (SQL or NoSQL) for storage
@@ -117,9 +120,6 @@ We aim to help two key groups:
 ---
 
 ## 📌 Project Status
-
-### Wiring Diagrams
-![image](https://github.com/user-attachments/assets/816134a4-8f80-43ed-8bed-1a683591c899)
 
 > 🚧 Actively being developed (Spring 2025)
 
