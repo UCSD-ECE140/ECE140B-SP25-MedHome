@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="./static/css/profile.css">
+  </head>
+  <body>
+    <div class="header">
+      <h1 id="welcome-message">Welcome!</h1>
+      <form class="logout-form" style="margin-bottom: 1rem;" action="/logout" method="POST">
+        <button class="logout-button" type="submit">Logout</button>
+      </form>
+      <form class="device-form" action="/profile/user/{username}" method="POST">
+        <input type="text" id="device-name" name="device-name" required />
+        <button class="device-button" type="submit">Add Device</button>
+      </form>
+    </div>
+    <div style="text-align: center;">
+      <a class="dashboard-link" href='/dashboard/user/{username}'>Go to dashboard</a>
+      <a class="export-link" href='/export/user/{username}'>Go to export</a>
+    </div>
+    <div style="text-align: center;">
+      <h3>User Devices</h3>
+      <ul id="device-list"></ul>
+    </div>
+    <script src="./static/js/profile.js"></script>
+  </body>
+</html>

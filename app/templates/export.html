@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="./static/css/export.css">
+  </head>
+  <body>
+    <div class="header">
+      <h1 id="welcome-message">Welcome!</h1>
+      <form class="logout-form" style="margin-bottom: 1rem;" action="/logout" method="POST">
+        <button class="logout-button" type="submit">Logout</button>
+      </form>
+      <form class="wardrobe-form" action="/wardrobe/user/{username}" method="POST">
+        <input type="text" id="wardrobe-name" name="wardrobe-name" required />
+        <button class="wardrobe-button" type="submit">Export</button>
+      </form>
+    </div>
+    <div style="text-align: center;">
+      <a class="profile-link" href='/profile/user/{username}'>Go to profile</a>
+      <a class="dashboard-link" href='/dashboard/user/{username}'>Go to dashboard</a>
+    </div>
+    <div style="text-align: center;">
+    <h3>Data Points</h3>
+      <ul id="clothes-list"></ul>
+    </div>
+    <script src="./static/js/export.js"></script>
+  </body>
+</html>
+

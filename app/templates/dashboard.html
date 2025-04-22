@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./static/css/dashboard.css">
+  </head>
+  <body>
+    <div class="header">
+      <h1 id="welcome-message">Welcome!</h1>
+      <form class="logout-form" action="/logout" method="POST">
+        <button class="logout-button" type="submit">Logout</button>
+      </form>
+    </div>
+    <div style="text-align: center;" class="user-details">
+      <h3 style="margin-block: 0.5rem;">Dashboard</h3>
+    </div>
+    <div>
+        <a class="profile-link" href='/profile/user/{username}'>Go to profile</a>
+        <a class="export-link" href='/export/user/{username}'>Go to export</a>
+    </div>
+    <script src="./static/js/dashboard.js"></script>
+  </body>
+</html>
