@@ -79,7 +79,8 @@ We aim to help two key groups:
 
 ### 🗓️ Week 4–5
 - **Software**:  
-  - Set up website skeleton: landing page, user page, vitals dashboard  
+  - Create wire frames for the webiste
+  - Create landing page for website: user login and signup page, about us page
 - **Hardware**:  
   - Draft circuit schematics and wiring plans (Raspberry Pi + sensors)
 
@@ -87,22 +88,28 @@ We aim to help two key groups:
 
 ### 🗓️ Week 6–7
 - **Software**:  
-  - Implement user login/auth system  
-  - Build database schemas + integrate graphing for vitals  
+  - Implement user login authentication system with cookies sessions 
+  - Build database schemas
+  - Integrate graphing for vitals  
   - Begin WiFi/MQTT testing with Raspberry Pi 
+  - Create basic Python script for I2C interfacing 
 - **Hardware**:  
-  - Start wiring sensors using SPI/I2C  
-  - Design chair layout for electronics integration
+  - Test MAX30102 oximeter sensor 
+  - Test HX711 sensor load module 
+  - Once testing complete integrate sensors with Raspberry Pi
+  - Design chair layout for electronics integration 
 
 ---
 
 ### 🗓️ Week 8–9
-- **Software**:  
-  - Enable device registration and data uploads  
-  - Continue backend development & data management  
+- **Software**:
+  - Add device registration pages
+  - Add data uploading capability
+  - Continue backend development & data management
+  - Make webiste look nice with styling sheets
 - **Hardware**:  
-  - Test all devices + consolidate on perfboard or PCB  
-  - Finalize mounting on the chair
+  - Consolidate electronics and wiring using perfboard or PCB 
+  - Finalize mounting all parts on the chair
 
 ---
 
