@@ -22,9 +22,27 @@ from app.database import (
     create_device,
     get_device_by_device_mac,
     get_device_by_username,
-    delete_device,
-    add_sensor_data
+    delete_device
 )
+
+async def verify_user(username: str, request: Request) -> bool:
+    """
+    Verify if the provided username matches the current session of the client.
+    """
+    # Get sessionId from cookies
+    session_id = request.cookies.get("sessionId")
+
+    # Check if sessionId exists and is valid
+    #   - if not, redirect to /login
+    current_session = await get_session(session_id)
+    if current_session is None:
+        return False
+    user_with_id = await get_user_by_id(current_session["user_id"])
+    
+    # Check if session username matches URL username
+    #   - if not, return false else return true
+    return user_with_id["username"] == username
+
 
 INIT_USERS = {"alice": "pass123", "bob": "pass456"}
 
@@ -76,53 +94,46 @@ async def tempdata(request: Request):
     return {"message": "Data received", "data": temp}
 
 @app.get("/", response_class=HTMLResponse)
-def read_root(request: Request):
+async def read_root(request: Request):
     return HTMLResponse(content=open("app/templates/index.html").read(), status_code=200)
 
-@app.get("/dashboard", response_class=HTMLResponse)
-def read_dashboard(request: Request):
-    return HTMLResponse(content=open("app/templates/dashboard.html").read(), status_code=200)
+@app.get("/dashboard/user/{username}", response_class=HTMLResponse)
+async def read_dashboard(username: str, request: Request):
+    if(await verify_user(username, request)):
+        with open("app/templates/dashboard.html") as html:
+            return HTMLResponse(content=html.read())
+    else:
+        return HTMLResponse(content=get_error_html(username), status_code=403)
+
+@app.post("/dashboard/user/{username}", response_class=HTMLResponse)
+async def profile(username: str, request: Request):
+    return RedirectResponse(url=f"/dashboard/user/{username}", status_code=302)
 
 @app.get("/profile/user/{username}", response_class=HTMLResponse)
 async def user_page(username: str, request: Request):
     """Show user profile if authenticated, error if not"""
-    # TODO: 11. Get sessionId from cookies
-    session_id = request.cookies.get("sessionId")
-
-    # TODO: 12. Check if sessionId exists and is valid
-    #   - if not, redirect to /login
-    current_session = await get_session(session_id)
-    if current_session is None:
-        return RedirectResponse(url="/login", status_code=302)
-    user_with_id = await get_user_by_id(current_session["user_id"])
-    
-    # TODO: 13. Check if session username matches URL username
-    #   - if not, return error page using get_error_html with 403 status
-    
-    if user_with_id["username"] != username:
-        return HTMLResponse(content=get_error_html(username), status_code=403)
-
-    # TODO: 14. If all valid, show profile page
-    else: 
+    if(await verify_user(username, request)):
         with open("app/templates/profile.html") as html:
             return HTMLResponse(content=html.read())
+    else:
+        return HTMLResponse(content=get_error_html(username), status_code=403)
 
 @app.post("/profile/user/{username}", response_class=HTMLResponse)
-async def login(username: str, request: Request):
-    """Validate credentials and create a new session if valid"""
-    form_data = await request.form()
-    device_mac = form_data.get("device-name")
-
-    device_id = await get_device_by_device_mac(device_mac)
-    await create_device(username, device_mac)
-    
+async def profile(username: str, request: Request):
     return RedirectResponse(url=f"/profile/user/{username}", status_code=302)
 
-@app.get("/export", response_class=HTMLResponse)
-async def export_page(request: Request):
+@app.get("/export/user/{username}", response_class=HTMLResponse)
+async def export_page(username: str, request: Request):
     """Show export page"""
-    with open("app/templates/export.html") as html:
-        return HTMLResponse(content=html.read())
+    if(await verify_user(username, request)):
+        with open("app/templates/export.html") as html:
+            return HTMLResponse(content=html.read())
+    else:
+        return HTMLResponse(content=get_error_html(username), status_code=403)
+
+@app.post("/export/user/{username}", response_class=HTMLResponse)
+async def export(username: str, request: Request):
+    return RedirectResponse(url=f"/export/user/{username}", status_code=302)
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
@@ -132,19 +143,21 @@ async def signup_page(request: Request):
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    id = request.cookies.get("sessionId")
-    if id:
-        print(id)
-        id = await get_session(id)
-        if id:
-            username = await get_user_by_id(id["user_id"])
-            return RedirectResponse(url=f"/profile/user/{username['username']}", status_code=302)
-        else:
-            with open("app/templates/login.html") as html:
-                return HTMLResponse(content=html.read()) 
-    else:
-        with open("app/templates/login.html") as html:
-            return HTMLResponse(content=html.read())
+    """Show login page"""
+    # Get sessionId from cookies
+    session_id = request.cookies.get("sessionId")
+    
+    # Check if sessionId exists and is valid
+    #   - if not, redirect to /login
+    current_session = await get_session(session_id)
+    if current_session is not None:
+        user_with_id = await get_user_by_id(current_session["user_id"])
+        username = user_with_id["username"]
+        # Redirect to /profile/user/{username}
+        return RedirectResponse(url=f"/profile/user/{username}", status_code=302)
+    
+    with open("app/templates/login.html") as html:
+        return HTMLResponse(content=html.read())
 
 @app.post("/login", response_class=HTMLResponse)
 async def login(request: Request):
@@ -153,7 +166,7 @@ async def login(request: Request):
     username = form_data.get("username")
     password = form_data.get("password")
     
-    # TODO: 5. Check if username exists and password matches
+    # Check if username exists and password matches
     user = await get_user_by_username(username)
     if user is not None:
         if user["password"] == password:
@@ -163,12 +176,12 @@ async def login(request: Request):
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # TODO: 6. Create a new session
+    # Create a new session
     session_id = str(uuid.uuid4())
-    new_session = await create_session(user["id"], session_id)
+    await create_session(user["id"], session_id)
 
-    # TODO: 7. Create response with:
-    #   - redirect to /user/{username}
+    # Create response with:
+    #   - redirect to /profile/user/{username}
     #   - set cookie with session ID
     #   - return the response
     response = RedirectResponse(url=f"/profile/user/{username}", status_code=302)

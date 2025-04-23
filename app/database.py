@@ -1,6 +1,5 @@
 import os
 import mysql.connector
-import pandas as pd
 from dotenv import load_dotenv
 import time
 import logging
@@ -175,7 +174,9 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
 
 # Database utility functions for user and session management
 async def get_user_by_username(username: str) -> Optional[dict]:
-    """Retrieve user from database by username."""
+    """
+    Retrieve user from database by username.
+    """
     connection = None
     cursor = None
     try:
@@ -192,12 +193,6 @@ async def get_user_by_username(username: str) -> Optional[dict]:
 async def get_user_by_id(user_id: int) -> Optional[dict]:
     """
     Retrieve user from database by ID.
-
-    Args:
-        user_id: The ID of the user to retrieve
-
-    Returns:
-        Optional[dict]: User data if found, None otherwise
     """
     connection = None
     cursor = None
@@ -214,7 +209,8 @@ async def get_user_by_id(user_id: int) -> Optional[dict]:
 
 async def get_device_by_username(username: str) -> Optional[dict]:
     """
-    Retrieve device from database by username."""
+    Retrieve device from database by username.
+    """
     connection = None
     cursor = None
     try:
@@ -231,7 +227,8 @@ async def get_device_by_username(username: str) -> Optional[dict]:
 
 async def get_device_by_device_mac(device_mac: str) -> Optional[dict]:        
     """
-    Retrieve device from database by device name."""
+    Retrieve device from database by device mac.
+    """
     connection = None
     cursor = None
     try:
@@ -245,30 +242,13 @@ async def get_device_by_device_mac(device_mac: str) -> Optional[dict]:
         if connection and connection.is_connected():
             connection.close()
 
-async def get_device_by_username(username: str) -> Optional[dict]:
-    """
-    Retrieve device from database by username."""
-    connection = None
-    cursor = None
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM devices WHERE username = %s", (username,))
-        return cursor.fetchall()
-    finally:
-        if cursor:
-            cursor.close()
-        if connection and connection.is_connected():
-            connection.close() 
-            
-async def create_user(username: str, password: str, location: str) -> Optional[int]:
+async def create_user(username: str, password: str) -> Optional[int]:
     """
     Create a new user in the database.
 
     Args:
         username (str): The username of the new user
         password (str): The password of the new user
-        location (str): The location of the new user
 
     Returns:
         int: The ID of the newly created user
@@ -279,7 +259,7 @@ async def create_user(username: str, password: str, location: str) -> Optional[i
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO users (username, password, location) VALUES (%s, %s, %s)", (username, password, location)
+            "INSERT INTO users (username, password) VALUES (%s, %s)", (username, password)
         )
         connection.commit()
         return cursor.lastrowid
@@ -291,7 +271,15 @@ async def create_user(username: str, password: str, location: str) -> Optional[i
             
 async def create_device(username: str, device_mac: str) -> Optional[int]:
     """
-    Create a new device in the database."""
+    Create a new device in the database.
+
+    Args:
+        username (str): The username of the user registered with the device
+        device_mac (str): The mac address of the new device
+
+    Returns:
+        int: The ID of the newly registered device
+    """
     connection = None
     cursor = None
     try:
@@ -309,7 +297,9 @@ async def create_device(username: str, device_mac: str) -> Optional[int]:
             connection.close()
             
 async def delete_device(device_id: int) -> None:
-    """Delete a device from the database."""
+    """
+    Delete a device from the database given the device id.
+    """
     connection = None
     cursor = None
     try:
@@ -327,7 +317,9 @@ async def delete_device(device_id: int) -> None:
             connection.close()
 
 async def create_session(user_id: int, session_id: str) -> bool:
-    """Create a new session in the database."""
+    """
+    Create a new session in the database.
+    """
     connection = None
     cursor = None
     try:
@@ -346,7 +338,9 @@ async def create_session(user_id: int, session_id: str) -> bool:
 
 
 async def get_session(session_id: str) -> Optional[dict]:
-    """Retrieve session from database."""
+    """
+    Retrieve session from database.
+    """
     connection = None
     cursor = None
     try:
@@ -370,7 +364,9 @@ async def get_session(session_id: str) -> Optional[dict]:
 
 
 async def delete_session(session_id: str) -> bool:
-    """Delete a session from the database."""
+    """
+    Delete a session from the database.
+    """
     connection = None
     cursor = None
     try:
@@ -384,73 +380,3 @@ async def delete_session(session_id: str) -> bool:
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
-            
-async def add_sensor_data(mac_address: str, temperature: float):
-    """Creates user and session tables and populates initial user data if provided."""
-    connection = None
-    cursor = None
-
-    try:
-        # Get database connection
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Insert New User
-        try:
-                insert_query = "INSERT INTO sensor_data (mac_address, temperature) VALUES (%s, %s)"
-                cursor.execute(insert_query, (mac_address, temperature))
-                connection.commit()
-                logger.info(f"Inserted sensor data for {mac_address}")
-        except Error as e:
-                logger.error(f"Error inserting sensor data: {e}")
-                raise    
-
-    except Exception as e:
-        logger.error(f"Database setup failed: {e}")
-        raise
-
-    finally:
-        if cursor:
-            cursor.close()
-        if connection and connection.is_connected():
-            connection.close()
-            logger.info("Database connection closed")
-            
-
-def create_tables():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    tables = {
-        "temperature": """
-            CREATE TABLE IF NOT EXISTS temperature (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                value FLOAT NOT NULL,
-                unit VARCHAR(20) NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """,
-        "humidity": """
-            CREATE TABLE IF NOT EXISTS humidity (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                value FLOAT NOT NULL,
-                unit VARCHAR(20) NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """,
-        "light": """
-            CREATE TABLE IF NOT EXISTS light (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                value FLOAT NOT NULL,
-                unit VARCHAR(20) NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-    }
-
-    for table_name, query in tables.items():
-        cursor.execute(query)
-
-    connection.commit()
-    cursor.close()
-    connection.close()
