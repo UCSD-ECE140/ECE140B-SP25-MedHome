@@ -1,4 +1,9 @@
-# 🏠💉 ECE140B-SP25: MedHome – Smart Health Chair
+# ECE140B-SP25:
+MedHome – Smart Health Chair
+
+<p align="center">
+   <img src="https://github.com/user-attachments/assets/33afbcc2-becf-491b-bcc4-d98b475f572d" width=500px/>
+</p>
 
 Welcome to **MedHome**, a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic! This project is being developed for UCSD's ECE140B (Spring 2025) and aims to provide accessible, real-time health monitoring with the help of IoT and AI. 🚀
 
