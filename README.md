@@ -49,7 +49,7 @@ For this quarter, our MVP includes:
 - Communication protocols: SPI / I2C / UART
 
 ### 🖧 IOT Diagram
-![image](https://github.com/user-attachments/assets/6a1b2af8-5dcd-4b6d-b73f-5f778ee617c7)
+![Software_Flow](https://github.com/user-attachments/assets/a7d054f8-ad7b-44a9-a929-303ac8f96739)
 
 ### 🔌Wiring Diagrams
 ![image](https://github.com/user-attachments/assets/816134a4-8f80-43ed-8bed-1a683591c899)
