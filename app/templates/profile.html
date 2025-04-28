@@ -3,26 +3,45 @@
   <head>
     <title>Welcome</title>
     <link rel="stylesheet" href="/static/css/index.css">
+    <script src="https://kit.fontawesome.com/04dadf6c21.js" crossorigin="anonymous"></script>
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
   </head>
   <body>
+    <div class="navbar">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <img src="/static/images/medhome_logo_notext.png" alt="MedHome Logo" width="50px" style="margin: 10px;">
+        <h1 id="welcome-message">Welcome!</h1>
+      </div>
+      <div class="links">
+        <input type="checkbox" id="check" style="display: none;"/>
+        <label for="check" class="checkbtn">
+          <i class="fa-solid fa-bars fa-xl" style="color: #1b2a41;"></i>
+        </label>
+        <div class="dropdown-content">
+          <a class="dashboard-link" href="/dashboard/user/{username}">Dashboard</a>
+          <a class="export-link" href="/export/user/{username}">Export</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
     <div class="header">
-      <h1 id="welcome-message">Welcome!</h1>
-      <form class="logout-form" style="margin-bottom: 1rem;" action="/logout" method="POST">
-        <button class="logout-button" type="submit">Logout</button>
-      </form>
+      <h1 id="welcome-message">User Details</h1>
+      <h2 id="user-role">Role: {role}</h2>
+      <h2 id="user-name">User: {username}</h2>
+      <h2 id="user-email">Email: {email}</h2>
+      <h2 id="user-phone">Phone: {phone}</h2>
+      <h2 id="user-birthdate">Birthdate: {birthdate}</h2>
+    </div>
+    <div class="header">
+      <h2>Registered Devices</h2>
+      <ul id="device-list"></ul>
+    </div>
+    <div class="header">
+      <h2>Add Device</h2>
       <form class="device-form" action="/profile/user/{username}" method="POST">
         <input type="text" id="device-name" name="device-name" required />
         <button class="device-button" type="submit">Add Device</button>
       </form>
-    </div>
-    <div style="text-align: center;">
-      <a class="dashboard-link" href='/dashboard/user/{username}'>Go to dashboard</a>
-      <a class="export-link" href='/export/user/{username}'>Go to export</a>
-    </div>
-    <div style="text-align: center;">
-      <h3>User Devices</h3>
-      <ul id="device-list"></ul>
     </div>
     <script src="/static/js/profile.js"></script>
   </body>

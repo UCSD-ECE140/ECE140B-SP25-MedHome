@@ -9,3 +9,10 @@ dashboardLink.href = `/dashboard/user/${username}`;
 
 exportLink = document.querySelector('.export-link');
 exportLink.href = `/export/user/${username}`;
+
+usernameDisplay = document.querySelector('#user-name');
+usernameDisplay.innerHTML = `User: ${username}`;
+
+// grab username and set it in the profile header
+const profileHeader = document.querySelector('#welcome-message');
+profileHeader.innerHTML = 'Welcome, ' + username + '!';
