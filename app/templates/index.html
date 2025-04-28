@@ -1,23 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Welcome</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MedHome</title>
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
     <link rel="stylesheet" href="../static/css/index.css">
 </head>
 <body>
     <div class="navbar">
+        <div class="logo">MedHome</div>
         <div class="links">
             <a href="/login">Login</a>
             <a href="/signup">Signup</a>
         </div>
     </div>
-    <img src="../static/images/medhome_logo.png" alt="MedHome Logo" width="700px">
-    <div class="project-description">
-        <p>    
-            Welcome to MedHome, a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic! This project is being developed for UCSD's ECE140B (Spring 2025) and aims to provide accessible, real-time health monitoring with the help of IoT and AI. 🚀
+
+    <img src="../static/images/medhome_logo.png" alt="MedHome Logo" width="600px">
+
+    <div class="welcome-container center" style="max-width: 800px; background: rgba(107, 134, 140, 0.6); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 2rem;">
+        <h1 id="welcome-message">Welcome to MedHome</h1>
+        <p>
+            MedHome is a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic.
+            Developed for UCSD's ECE140B (Spring 2025), it offers accessible, real-time health monitoring using IoT and AI technology. 🚀
         </p>
     </div>
-    <script src="./static/js/index.js"></script>
 </body>
 </html>

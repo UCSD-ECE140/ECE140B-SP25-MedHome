@@ -2,9 +2,13 @@
 <html>
   <head>
     <title>Login</title>
-    <link rel="stylesheet" href="./static/css/login.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
   </head>
   <body>
+
+    <img src="../static/images/medhome_logo.png" alt="MedHome Logo" width="600px">
+
     <form action="/login" method="POST">
       <div>
         <label for="username">Username:</label>
@@ -16,6 +20,7 @@
       </div>
       <button type="submit">Login</button>
     </form>
+    <br>
     <p>Don't have an account? <a href="/signup">Sign up</a></p>
     <div>
       <a href="/">Go back to main page</a>
