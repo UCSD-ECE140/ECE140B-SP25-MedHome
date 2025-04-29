@@ -212,5 +212,25 @@ async def login(request: Request):
     response.set_cookie(key="sessionId", value=session_id)
     return response
 
+@app.post("/logout", response_class=HTMLResponse)
+async def logout(request: Request):
+    """Logout user and delete session"""
+    # Get sessionId from cookies
+    session_id = request.cookies.get("sessionId")
+
+    # Check if sessionId exists and is valid
+    #   - if not, redirect to /login
+    current_session = await get_session(session_id)
+    if current_session is None:
+        return RedirectResponse(url="/login", status_code=302)
+
+    # Delete session
+    await delete_session(session_id)
+
+    # Redirect to /login
+    response = RedirectResponse(url="/login", status_code=302)
+    response.delete_cookie(key="sessionId")
+    return response
+
 if __name__ == "__main__":
     uvicorn.run(app="app.main:app", host="0.0.0.0", port=6543, reload=False)
