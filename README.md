@@ -100,7 +100,8 @@ We aim to help two key groups:
   - Create basic Python script for I2C interfacing 
 - **Hardware**:  
   - Test MAX30102 oximeter sensor 
-  - Test HX711 sensor load module 
+  - Test HX711 sensor load module
+  - Extract Blood Pressure Data with I2C bus
   - Once testing complete integrate sensors with Raspberry Pi
   - Design chair layout for electronics integration 
 
