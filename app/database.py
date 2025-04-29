@@ -87,8 +87,11 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         "users": """
             CREATE TABLE users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
+                first_name VARCHAR(255) NOT NULL,
+                last_name VARCHAR(255) NOT NULL,
                 username VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """,
@@ -140,9 +143,9 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         # Insert initial users if provided
         if initial_users:
             try:
-                insert_query = "INSERT INTO users (username, password) VALUES (%s, %s)"
-                for username, password in initial_users.items():
-                    cursor.execute(insert_query, (username, password))
+                insert_query = "INSERT INTO users (first_name, last_name, email, username, password) VALUES (%s, %s, %s, %s, %s)"
+                for username, (first_name, last_name, email, username, password) in initial_users.items():
+                    cursor.execute(insert_query, (first_name, last_name, email, username, password))
                 connection.commit()
                 logger.info(f"Inserted {len(initial_users)} initial users")
             except Error as e:
@@ -170,7 +173,6 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         if connection and connection.is_connected():
             connection.close()
             logger.info("Database connection closed")
-
 
 # Database utility functions for user and session management
 async def get_user_by_username(username: str) -> Optional[dict]:
@@ -242,13 +244,17 @@ async def get_device_by_device_mac(device_mac: str) -> Optional[dict]:
         if connection and connection.is_connected():
             connection.close()
 
-async def create_user(username: str, password: str) -> Optional[int]:
+async def create_user(username: str, first_name: str, last_name: str, email: str, password: str) -> Optional[int]:
     """
     Create a new user in the database.
 
     Args:
         username (str): The username of the new user
         password (str): The password of the new user
+        first_name (str): The first name of the new user
+        last_name (str): The last name of the new user
+        email (str): The email of the new user
+
 
     Returns:
         int: The ID of the newly created user
@@ -258,11 +264,12 @@ async def create_user(username: str, password: str) -> Optional[int]:
     try:
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO users (username, password) VALUES (%s, %s)", (username, password)
-        )
+        insert_query = "INSERT INTO users (first_name, last_name, email, username, password) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (first_name, last_name, email, username, password))
         connection.commit()
+        logger.info(f"User {username} created successfully")
         return cursor.lastrowid
+    
     finally:
         if cursor:
             cursor.close()
@@ -336,7 +343,6 @@ async def create_session(user_id: int, session_id: str) -> bool:
         if connection and connection.is_connected():
             connection.close()
 
-
 async def get_session(session_id: str) -> Optional[dict]:
     """
     Retrieve session from database.
@@ -361,7 +367,6 @@ async def get_session(session_id: str) -> Optional[dict]:
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
-
 
 async def delete_session(session_id: str) -> bool:
     """

@@ -11,22 +11,120 @@
 
     <form action="/signup" method="POST">
       <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required />
+        <label for="name">First Name:</label>
+        <input type="text" id="fname" name="fname" required />
+      </div>
+      <div>
+        <label for="name">Last Name:</label>
+        <input type="text" id="lname" name="lname" required />
       </div>
       <div>
         <label for="email">Email:</label>
         <input type="text" id="email" name="email" required />
       </div>
       <div>
+        <label for="email">Username:</label>
+        <input type="text" id="user" name="user" required />
+      </div>
+      <div>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required />
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          required 
+        />
+        <div id="password-requirements">
+          <p>Password must include:</p>
+          <ul>
+            <li id="length" class="invalid">At least 8 characters</li>
+            <li id="uppercase" class="invalid">At least one uppercase letter</li>
+            <li id="lowercase" class="invalid">At least one lowercase letter</li>
+            <li id="number" class="invalid">At least one number</li>
+            <li id="special" class="invalid">At least one special character (@#$%^&+=)</li>
+          </ul>
+        </div>
       </div>
       <button type="submit">Sign up</button>
     </form>
     <br>
     <p>Already have an account? <a href="/login">Login here</a></p>
     <a href="/">Go back to main page</a>
-    <script src="./static/js/signup.js"></script>
+    <script>
+      const passwordInput = document.getElementById('password');
+      const lengthRequirement = document.getElementById('length');
+      const uppercaseRequirement = document.getElementById('uppercase');
+      const lowercaseRequirement = document.getElementById('lowercase');
+      const numberRequirement = document.getElementById('number');
+      const specialRequirement = document.getElementById('special');
+
+      passwordInput.addEventListener('input', () => {
+        const value = passwordInput.value;
+
+        // Check length
+        if (value.length >= 8) {
+          lengthRequirement.classList.add('valid');
+          lengthRequirement.classList.remove('invalid');
+        } else {
+          lengthRequirement.classList.add('invalid');
+          lengthRequirement.classList.remove('valid');
+        }
+
+        // Check uppercase
+        if (/[A-Z]/.test(value)) {
+          uppercaseRequirement.classList.add('valid');
+          uppercaseRequirement.classList.remove('invalid');
+        } else {
+          uppercaseRequirement.classList.add('invalid');
+          uppercaseRequirement.classList.remove('valid');
+        }
+
+        // Check lowercase
+        if (/[a-z]/.test(value)) {
+          lowercaseRequirement.classList.add('valid');
+          lowercaseRequirement.classList.remove('invalid');
+        } else {
+          lowercaseRequirement.classList.add('invalid');
+          lowercaseRequirement.classList.remove('valid');
+        }
+
+        // Check number
+        if (/\d/.test(value)) {
+          numberRequirement.classList.add('valid');
+          numberRequirement.classList.remove('invalid');
+        } else {
+          numberRequirement.classList.add('invalid');
+          numberRequirement.classList.remove('valid');
+        }
+
+        // Check special character
+        if (/[@#$%^&+=]/.test(value)) {
+          specialRequirement.classList.add('valid');
+          specialRequirement.classList.remove('invalid');
+        } else {
+          specialRequirement.classList.add('invalid');
+          specialRequirement.classList.remove('valid');
+        }
+      });
+    </script>
+    <style>
+      #password-requirements {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      #password-requirements ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      #password-requirements li {
+        margin: 5px 0;
+      }
+      .valid {
+        color: green;
+      }
+      .invalid {
+        color: red;
+      }
+    </style>
   </body>
 </html>

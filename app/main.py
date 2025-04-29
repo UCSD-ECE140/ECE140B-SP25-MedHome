@@ -44,7 +44,10 @@ async def verify_user(username: str, request: Request) -> bool:
     return user_with_id["username"] == username
 
 
-INIT_USERS = {"alice": "pass123", "bob": "pass456"}
+INIT_USERS = {
+    "alice": ("Alice", "Smith", "alice@example.com", "alice", "pass123"),
+    "bob": ("Bob", "Johnson", "bob@example.com", "bob", "pass456")
+}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -140,6 +143,27 @@ async def signup_page(request: Request):
     """Show signup page"""
     with open("app/templates/signup.html") as html:
         return HTMLResponse(content=html.read())
+
+@app.post("/signup", response_class=HTMLResponse)
+async def signup(request: Request):
+    """Create a new user and redirect to /login"""
+    form_data = await request.form()
+    username = form_data.get("user")
+    first_name = form_data.get("fname")
+    last_name = form_data.get("lname")
+    email = form_data.get("email")
+    password = form_data.get("password")
+
+    # Check if username already exists
+    existing_user = await get_user_by_username(username)
+    if existing_user is not None:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+    # Create new user
+    await create_user(username, first_name, last_name, email, password)
+
+    # Redirect to /login
+    return RedirectResponse(url="/login", status_code=302)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
