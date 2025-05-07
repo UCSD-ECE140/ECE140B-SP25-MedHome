@@ -82,7 +82,7 @@ We aim to help two key groups:
 
 ## 📆 Biweekly Check-In Plan
 
-### 🗓️ Week 4–5
+### 🗓️ Week 2–3
 - **Software**:  
   - Create wire frames for the webiste
   - Create landing page for website: user login and signup page, about us page
@@ -91,35 +91,35 @@ We aim to help two key groups:
 
 ---
 
-### 🗓️ Week 6–7
+### 🗓️ Week 5–6
 - **Software**:  
   - Implement user login authentication system with cookies sessions 
   - Build database schemas
   - Integrate graphing for vitals  
-  - Begin WiFi/MQTT testing with Raspberry Pi 
-  - Create basic Python script for I2C interfacing 
+  - Begin WiFi/MQTT testing with ESP32
 - **Hardware**:  
   - Test MAX30102 oximeter sensor 
   - Test HX711 sensor load module
   - Extract Blood Pressure Data with I2C bus
-  - Once testing complete integrate sensors with Raspberry Pi
-  - Design chair layout for electronics integration 
+  - Once testing complete integrate sensors with ESP32
+  - Design kit layout for electronics integration 
 
 ---
 
-### 🗓️ Week 8–9
+### 🗓️ Week 7–8
 - **Software**:
-  - Add device registration pages
-  - Add data uploading capability
-  - Continue backend development & data management
-  - Make webiste look nice with styling sheets
-- **Hardware**:  
+  - Create schema diagrams, use DrawSQL
+  - Enable ESP32 web hosting for device setup/registration 
+  - Add data uploading capability 
+  - Make webiste look nice with styling sheets 
+- **Hardware**: 
   - Consolidate electronics and wiring using perfboard or PCB 
-  - Finalize mounting all parts on the chair
+  - Validate blood pressure monitor 
+  - Print out kit enclosure, make scale base plate 
 
 ---
 
-### 🗓️ Week 10
+### 🗓️ Week 9-10
 - **Software**:  
   - Final testing & deployment of website + Raspberry Pi system  
 - **Hardware**:  
