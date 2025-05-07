@@ -4,21 +4,37 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
+    <script src="https://kit.fontawesome.com/04dadf6c21.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
   </head>
   <body>
-    <div class="header">
-      <h1 id="welcome-message">Welcome!</h1>
-      <form class="logout-form" action="/logout" method="POST">
-        <button class="logout-button" type="submit">Logout</button>
-      </form>
+    <div class="navbar">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <img src="/static/images/medhome_logo_notext.png" alt="MedHome Logo" width="50px" style="margin: 10px;">
+        <h1 id="welcome-message">Welcome!</h1>
+      </div>
+      <div class="links">
+        <input type="checkbox" id="check" style="display: none;"/>
+        <label for="check" class="checkbtn">
+          <i class="fa-solid fa-bars fa-xl" style="color: #1b2a41;"></i>
+        </label>
+        <div class="dropdown-content">
+          <a class="profile-link" href="/profile/user/{username}">Profile</a>
+          <a class="export-link" href="/export/user/{username}">Export</a>
+          <a class="logout-form" href="#">Logout</a>
+        </div>
+      </div>
     </div>
     <div style="text-align: center;" class="user-details">
       <h3 style="margin-block: 0.5rem;">Dashboard</h3>
     </div>
-    <div>
-        <a class="profile-link" href='/profile/user/{username}'>Go to profile</a>
-        <a class="export-link" href='/export/user/{username}'>Go to export</a>
-    </div>
+    <h3 style="text-align: center; margin-block: 0.5rem;">Heartrate Data</h3>
+    <canvas id="heartrateChart"></canvas>
+    <h3 style="text-align: center; margin-block: 0.5rem;">Blood Pressure Data</h3>
+    <canvas id="bloodPressureChart"></canvas>
+    <h3 style="text-align: center; margin-block: 0.5rem;">Weight Data</h3>
+    <canvas id="weightChart"></canvas>
     <script src="/static/js/dashboard.js"></script>
   </body>
 </html>
