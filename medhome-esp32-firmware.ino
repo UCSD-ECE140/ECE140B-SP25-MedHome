@@ -43,24 +43,33 @@ void connectToWiFi() {
   }
 }
 
-void postRequest() {
+void postRequest(int avgHR, int avgSpO2, int weight, int bpS, int bpD) {
   const char* serverURL = "https://ece140b-sp25-medhome.onrender.com/tempdata";
 
   HTTPClient http;
   http.begin(serverURL);
   http.addHeader("Content-Type", "application/json");
 
-    // Create JSON payload
-  String jsonData = "{\"temperature\": 24.5}";
+  // Create JSON payload
+  String jsonData = "{";
+  jsonData += "\"heart_rate\":" + String(avgHR) + ",";
+  jsonData += "\"spo2\":" + String(avgSpO2) + ",";
+  jsonData += "\"weight\":" + String(weight) + ",";
+  jsonData += "\"bp_systolic\":" + String(bpS) + ",";
+  jsonData += "\"bp_diastolic\":" + String(bpD);
+  jsonData += "}";
 
-    // Send POST request
+  // Send POST request
   int httpResponseCode = http.POST(jsonData);
 
-    // Print the response
+  // Print the response
   Serial.print("HTTP Response code: ");
   Serial.println(httpResponseCode);
   String response = http.getString();
+  lcd.setCursor(0, 0);
+  lcd.print(response);
   Serial.println(response);
+  delay(750);
 
   http.end();
 }
@@ -159,28 +168,83 @@ void setup() {
 void loop() {
   
   if (digitalRead(4) == HIGH) {
-    Serial.println("Beginning Analysis");
     int avgHR = 0, avgSpO2 = 0, weight, bpS, bpD;
-    readVitalsAverage(avgHR, avgSpO2);
-    readWeight(weight);
-    readBP(bpS, bpD);
+    Serial.println("Beginning Analysis");
+    set.cursor(0, 0);
+    lcd.print("Beginning Analysis");
+    delay(1000);
+    lcd.clear();
 
+    lcd.setCursor(0, 0);
+    lcd.print("Reading Vitals...");
+    serial.println("Reading Vitals...");
+    delay(1000);
+    readVitalsAverage(avgHR, avgSpO2);
+    lcd.clear();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Reading Weight...");
+    serial.println("Reading Weight...");
+    delay(1000)
+    readWeight(weight);
+    lcd.clear();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Reading BP...");
+    serial.println("Reading Blood Pressure...");
+    delay(1000)
+    readBP(bpS, bpD);
+    clear.lcd();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Avg HR: ");
     Serial.print("Average Heart Rate (BPM): ");
+    lcd.print(avgHR);
     Serial.println(avgHR);
+    delay(1000);
+    lcd.clear();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Avg SpO2: ");
     Serial.print("Average SpO₂ (%): ");
+    lcd.print(avgSpO2);
     Serial.println(avgSpO2);
+    delay(1000);
+    lcd.clear();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Weight: ");
     Serial.print("Weight: ");
+    lcd.print(weight);
     Serial.println(weight);
+    delay(1000);
+    lcd.clear();
+
+    lcd.setCursor(0, 0);
+    lcd.print("Blood Pressure: ");
     Serial.print("Blood Pressure: ");
+
+    lcd.setCursor(0, 1);
+    lcd.print(bpS);
+    lcd.print("/");
+    lcd.print(bpD);
     Serial.print(bpS);
     Serial.print("/");
     Serial.println(bpD);
+    delay(1000);
+    lcd.clear();
     
-    delay(1000); // Debounce delay
-  } else if (pressed == 0) {
+    postRequest(avgHR, avgSpO2, weight, bpS, bpD);
+
+    delay(1000);
+  } 
+  
+  else if (pressed == 0) {
     Serial.println("Press the button to start vitals measurement...");
     pressed = 1;
-  } else if (pressed == 1) {
+  } 
+  
+  else if (pressed == 1) {
     delay(10);
   }
   

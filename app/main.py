@@ -90,10 +90,12 @@ def get_error_html(username: str) -> str:
 async def hello_world():
     return {"message": "Hello, World!"}
 
-@app.post("/tempdata")
-async def tempdata(request: Request):
+@app.post("/data")
+async def dataPost(request: Request):
     data = await request.json()
-    temp = data.get("temp")
+    if data is None:
+        return {"message": "No data received"}
+    temp = data.get("heart_rate")
     return {"message": "Data received", "data": temp}
 
 @app.get("/", response_class=HTMLResponse)
