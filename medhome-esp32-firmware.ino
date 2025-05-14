@@ -6,8 +6,8 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define WIFI_NETWORK "333"
-#define WIFI_PASSWORD "Cindy2017"
+#define WIFI_NETWORK "Carlos's iPhone"
+#define WIFI_PASSWORD "12345678"
 #define WIFI_TIMEOUT_MS 20000
 #define BUTTON_PIN 4
 #define SAMPLE_BLOCK 100
@@ -22,6 +22,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 MAX30105 particleSensor;
 
 void connectToWiFi() {
+  int wifi = 0;
+  lcd.clear();
   delay(100);
   Serial.print("Connecting to WiFi");
   WiFi.mode(WIFI_STA);
@@ -35,11 +37,21 @@ void connectToWiFi() {
   }
 
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Failed To Connect!");
+      Serial.println("Failed To Connect!");
+      lcd.setCursor(0, 0);
+      lcd.print("Failed To Connect");
+      delay(1000);
+      lcd.clear();
   } 
   else {
     Serial.print("Connected To: ");
     Serial.println(WIFI_NETWORK);
+    lcd.setCursor(0, 0);
+    lcd.print("Connected To:");
+    lcd.setCursor(0, 1);
+    lcd.print(WIFI_NETWORK);
+    delay(1000);
+    lcd.clear();
   }
 }
 
@@ -154,15 +166,22 @@ void setup() {
   Serial.begin(115200);
   connectToWiFi();
   LCDSetup();
-  Serial.begin(115200);
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Active LOW button
 
   if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) {
     Serial.println("MAX30102 not found. Check wiring.");
+    lcd.setCursor(0, 0);
+    lcd.print("PulseOx Error");
     while (1);
   }
   particleSensor.setup(); // Recommended defaults
   
+  lcd.setCursor(0, 0);
+  lcd.print("Welcome to");
+  lcd.setCursor(0, 1);
+  lcd.print("MedHome");
+  delay(2000);
+  lcd.clear();
 }
 
 void loop() {
@@ -170,31 +189,31 @@ void loop() {
   if (digitalRead(4) == HIGH) {
     int avgHR = 0, avgSpO2 = 0, weight, bpS, bpD;
     Serial.println("Beginning Analysis");
-    set.cursor(0, 0);
+    lcd.setCursor(0, 0);
     lcd.print("Beginning Analysis");
     delay(1000);
     lcd.clear();
 
     lcd.setCursor(0, 0);
     lcd.print("Reading Vitals...");
-    serial.println("Reading Vitals...");
+    Serial.println("Reading Vitals...");
     delay(1000);
     readVitalsAverage(avgHR, avgSpO2);
     lcd.clear();
 
     lcd.setCursor(0, 0);
     lcd.print("Reading Weight...");
-    serial.println("Reading Weight...");
-    delay(1000)
+    Serial.println("Reading Weight...");
+    delay(1000);
     readWeight(weight);
     lcd.clear();
 
     lcd.setCursor(0, 0);
     lcd.print("Reading BP...");
-    serial.println("Reading Blood Pressure...");
-    delay(1000)
+    Serial.println("Reading Blood Pressure...");
+    delay(1000);
     readBP(bpS, bpD);
-    clear.lcd();
+    lcd.clear();
 
     lcd.setCursor(0, 0);
     lcd.print("Avg HR: ");
