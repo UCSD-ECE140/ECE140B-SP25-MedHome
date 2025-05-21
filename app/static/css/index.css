@@ -464,3 +464,30 @@ img {
 #check:checked ~ .dropdown-content {
     display: block;
 }
+
+.card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+      justify-items: center;
+}
+
+.metric-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 350px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+canvas {
+  max-width: 600px;
+  margin: 2rem auto;
+  display: block;
+}
