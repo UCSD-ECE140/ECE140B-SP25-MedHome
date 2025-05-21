@@ -106,7 +106,7 @@ h1, h3, p, label, a {
 
 #welcome-message {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   background: linear-gradient(90deg, #00bcd4, #4dd0e1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -457,6 +457,7 @@ img {
 
 .checkbtn {
     font-size: 1.5rem;
+    margin-bottom: 0;
     color: white;
     cursor: pointer;
 }
@@ -490,4 +491,47 @@ canvas {
   max-width: 600px;
   margin: 2rem auto;
   display: block;
+}
+
+.data-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  margin: 1rem auto;
+  width: 300px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.export-form {
+  margin-top: 2rem;
+}
+
+.export-form input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  margin-right: 10px;
+}
+
+.export-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.export-form button:hover {
+  background-color: #0056b3;
 }

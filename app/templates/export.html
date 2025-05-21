@@ -1,30 +1,60 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Welcome</title>
-    <link rel="stylesheet" href="/static/css/index.css">
-    <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
-  </head>
-  <body>
-    <div class="header">
-      <h1 id="welcome-message">Welcome!</h1>
-      <form class="logout-form" style="margin-bottom: 1rem;" action="/logout" method="POST">
-        <button class="logout-button" type="submit">Logout</button>
-      </form>
-      <form class="wardrobe-form" action="/wardrobe/user/{username}" method="POST">
-        <input type="text" id="wardrobe-name" name="wardrobe-name" required />
-        <button class="wardrobe-button" type="submit">Export</button>
-      </form>
-    </div>
-    <div style="text-align: center;">
-      <a class="profile-link" href='/profile/user/{username}'>Go to profile</a>
-      <a class="dashboard-link" href='/dashboard/user/{username}'>Go to dashboard</a>
-    </div>
-    <div style="text-align: center;">
-    <h3>Data Points</h3>
-      <ul id="clothes-list"></ul>
-    </div>
-    <script src="/static/js/export.js"></script>
-  </body>
-</html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Export</title>
+  <link rel="stylesheet" href="/static/css/index.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
+  <script src="https://kit.fontawesome.com/04dadf6c21.js" crossorigin="anonymous"></script>
+</head>
+<body>
 
+  <div class="navbar">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <img src="/static/images/medhome_logo_notext.png" alt="MedHome Logo" width="50px" style="margin: 10px;">
+        <h1 id="welcome-message" >Welcome!</h1>
+      </div>
+      <div class="links">
+        <input type="checkbox" id="check" style="display: none;"/>
+        <label for="check" class="checkbtn">
+          <i class="fa-solid fa-bars fa-xl" style="color: #1b2a41;"></i>
+        </label>
+        <div class="dropdown-content">
+          <a class="profile-link" href="/profile/user/{username}">Profile</a>
+          <a class="dashboard-link" href="/dashboard/user/{username}">Dashboard</a>
+          <a class="logout-form" href="#">Logout</a>
+        </div>
+      </div>
+    </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h2>Data Points</h2>
+    <div class="data-list">
+      <div class="data-item">
+        <label for="bp">Blood Pressure</label>
+        <input type="checkbox" id="bp" name="bp">
+      </div>
+      <div class="data-item">
+        <label for="spo2">O2</label>
+        <input type="checkbox" id="spo2" name="spo2">
+      </div>
+      <div class="data-item">
+        <label for="hr">HR</label>
+        <input type="checkbox" id="hr" name="hr">
+      </div>
+      <div class="data-item">
+        <label for="weight">Weight</label>
+        <input type="checkbox" id="weight" name="weight">
+      </div>
+    </div>
+
+    <form class="export-form">
+      <label for="export-title">Title:</label>
+      <input type="text" id="export-title" name="export-title" required>
+      <button type="submit">Export</button>
+    </form>
+  </div>
+  <script src="/static/js/export.js"></script>
+</body>
+</html>

@@ -27,7 +27,7 @@ void connectToWiFi() {
   delay(100);
   Serial.print("Connecting to WiFi");
   config.autoReconnect = true;
-  config.apid = "ESP32_Setup";
+  config.apid = "MedHome_WIFI_Setup";
   config.psk = "12345678";
   portal.config(config);
   portal.begin();

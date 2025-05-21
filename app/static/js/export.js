@@ -10,6 +10,10 @@ profileLink.href = `/profile/user/${username}`;
 dashboardLink = document.querySelector('.dashboard-link');
 dashboardLink.href = `/dashboard/user/${username}`;
 
+// grab username and set it in the profile header
+const profileHeader = document.querySelector('#welcome-message');
+profileHeader.innerHTML = 'Welcome, ' + username + '!';
+
 const logoutForm = document.querySelector('.logout-form');
 logoutForm.addEventListener('click', function (event) {
     event.preventDefault(); // Prevent the default form submission
@@ -28,4 +32,12 @@ logoutForm.addEventListener('click', function (event) {
         }
     })
     .catch(error => console.error('Error:', error));
+});
+
+document.querySelector(".export-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const title = document.getElementById("export-title").value;
+    const selected = Array.from(document.querySelectorAll(".data-list input:checked")).map(input => input.name);
+    alert(`Exporting: ${selected.join(", ")}\nTitle: ${title}`);
+    // You can replace this alert with an actual fetch() or form submission
 });
