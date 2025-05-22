@@ -121,7 +121,10 @@ We aim to help two key groups:
 
 ### 🗓️ Week 9-10
 - **Software**:  
-  - Final testing & deployment of website + Raspberry Pi system  
+  - Get exporting of data feature working
+  - Data analysis algorithms for user data
+  - Clean up pages to look like proposed wireframes
+  - Final testing & deployment of website + ESP32 System  
 - **Hardware**:  
   - Final debugging of full chair setup  
 
