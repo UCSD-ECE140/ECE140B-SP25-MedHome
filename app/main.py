@@ -102,19 +102,23 @@ async def dataPost(request: Request):
 async def read_root(request: Request):
     return HTMLResponse(content=open("app/templates/index.html").read(), status_code=200)
 
-@app.post("/avgHRavgSpO2weightbpSbpD", response_class=HTMLResponse)
+@app.post("/avgHRavgSpO2weightbpSbpD")
 async def avgHRavgSpO2weightbpSbpD(request: Request):
     data = await request.json()
-    if data is None:
-        return {"message": "No data received"}
-    else:
-        return {
-            "message": "Data received",
-            "heart_rate": data.get("avgHR"),
-            "spO2": data.get("avgSpO2"),
-            "weight": data.get("weight"),
-            "bpS": data.get("bpS"),
-            "bpD": data.get("bpD")
+    # Validate required fields
+    required_fields = ["serial_number", "avgHR", "avgSpO2", "weight", "bpS", "bpD"]
+    if not all(field in data for field in required_fields):
+        return {"error": "Missing one or more required fields."}
+    # You can add database storage or processing here if needed
+
+    return {
+            "message": "Data received successfully",
+            "serial_number": data["serial_number"],
+            "avgHR": data["avgHR"],
+            "avgSpO2": data["avgSpO2"],
+            "weight": data["weight"],
+            "bpS": data["bpS"],
+            "bpD": data["bpD"]
         }
 
 @app.get("/dashboard/user/{username}", response_class=HTMLResponse)
