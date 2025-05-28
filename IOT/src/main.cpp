@@ -1,5 +1,6 @@
 #include "WiFi.h"
 #include "MAX30105.h"
+#include "HX711.h"
 #include "heartRate.h"
 #include <AutoConnect.h>
 #include "spo2_algorithm.h"
@@ -7,18 +8,25 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+#define SERIAL_NUMBER 1 
+// Alice has device with serial number 1
 #define WIFI_TIMEOUT_MS 20000
-#define BUTTON_PIN 4
+#define BUTTON_PIN 13
+#define HX711_DT 12
+#define HX711_SCK 14
 #define SAMPLE_BLOCK 100
 #define TOTAL_SAMPLES 500
+#define theSlope 1365.92567568
+#define theOffset 197995.84
 
 uint32_t irBuffer[SAMPLE_BLOCK];
 uint32_t redBuffer[SAMPLE_BLOCK];
 int pressed = 0;
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
 
 MAX30105 particleSensor;
+HX711 theScale; 
 
 AutoConnect portal;
 AutoConnectConfig config;
@@ -52,8 +60,8 @@ void connectToWiFi() {
   }
 }
 
-void postRequest(int avgHR, int avgSpO2, int weight, int bpS, int bpD) {
-  const char* serverURL = "https://ece140b-sp25-medhome.onrender.com/tempdata";
+void postRequest(int avgHR, int avgSpO2, float weight, int bpS, int bpD) {
+  const char* serverURL = "https://medhome.onrender.com/avgHRavgSpO2weightbpSbpD";
 
   HTTPClient http;
   http.begin(serverURL);
@@ -61,11 +69,12 @@ void postRequest(int avgHR, int avgSpO2, int weight, int bpS, int bpD) {
 
   // Create JSON payload
   String jsonData = "{";
-  jsonData += "\"heart_rate\":" + String(avgHR) + ",";
-  jsonData += "\"spo2\":" + String(avgSpO2) + ",";
+  jsonData += "\"serial_number\":" + String(SERIAL_NUMBER) + ","; 
+  jsonData += "\"avgHR\":" + String(avgHR) + ",";
+  jsonData += "\"avgSpO2\":" + String(avgSpO2) + ",";
   jsonData += "\"weight\":" + String(weight) + ",";
-  jsonData += "\"bp_systolic\":" + String(bpS) + ",";
-  jsonData += "\"bp_diastolic\":" + String(bpD);
+  jsonData += "\"bpS\":" + String(bpS) + ",";
+  jsonData += "\"bpD\":" + String(bpD);
   jsonData += "}";
 
   // Send POST request
@@ -147,9 +156,19 @@ void readVitalsAverage(int &averageHR, int &averageSpO2) {
   }
 }
 
-void readWeight(int &weight) {
-  Serial.println("200 KG");
-  weight = 200;
+void readWeight(float &weight) {
+  float totalValue = 0; 
+  float theReading = 0;
+  int sampleRate = TOTAL_SAMPLES / 2;  
+
+  for(int i = 0; i <= sampleRate; i++) { // Read weight scale until reached sample count, TOTAL_SAMPLES
+    theReading = theScale.read(); 
+    totalValue += abs(theReading);
+    // Serial.println(totalValue);  
+    delay(10); 
+  }
+
+  weight = ((totalValue/sampleRate) - theOffset) / theSlope; 
 }
 
 void readBP(int &bpS, int &bpD) {
@@ -158,26 +177,52 @@ void readBP(int &bpS, int &bpD) {
     bpD = 80;
 }
 
+void checkAddress() {
+  Serial.println("Scanning for devices!");
+
+  for (int anAddress = 1; anAddress < 256; anAddress++) {
+    Wire.beginTransmission(anAddress);
+
+    if (Wire.endTransmission() == 0) {
+      Serial.print("Found Address: ");
+      Serial.println(anAddress);
+    }
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
+  delay(2000); 
   Serial.begin(115200);
-  connectToWiFi();
-  LCDSetup();
+  Wire.begin(); // SDA, SCK 
+  // checkAddress(); 
+  // connectToWiFi();
+  LCDSetup(); 
+  delay(500); 
   Serial.begin(115200);
-  pinMode(BUTTON_PIN, INPUT_PULLUP); // Active LOW button
+  pinMode(BUTTON_PIN, INPUT); // Active LOW button
 
   if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) {
-    Serial.println("MAX30102 not found. Check wiring.");
-    while (1);
+    Serial.println("MAX30102 not found. Check wiring."); 
   }
   particleSensor.setup(); // Recommended defaults
-  
+
+  theScale.begin(HX711_DT, HX711_SCK); 
+  delay(500);  
+  Serial.println("Setup Complete."); 
+
+  lcd.setCursor(0, 0);
+  lcd.print("Device Setup Completed.");
+  delay(1000);
+  lcd.clear();
 }
 
 void loop() {
+  pressed = digitalRead(BUTTON_PIN); 
   
-  if (digitalRead(4) == HIGH) {
-    int avgHR = 0, avgSpO2 = 0, weight, bpS, bpD;
+  if (pressed == HIGH) {
+    int avgHR = 0, avgSpO2 = 0, bpS = 0, bpD = 0;
+    float weight = 0; 
     Serial.println("Beginning Analysis");
     lcd.setCursor(0, 0);
     lcd.print("Beginning Analysis");
@@ -247,14 +292,5 @@ void loop() {
 
     delay(1000);
   } 
-  
-  else if (pressed == 0) {
-    Serial.println("Press the button to start vitals measurement...");
-    pressed = 1;
-  } 
-  
-  else if (pressed == 1) {
-    delay(10);
-  }
-  
+ 
 }
