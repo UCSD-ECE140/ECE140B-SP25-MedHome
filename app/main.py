@@ -102,6 +102,21 @@ async def dataPost(request: Request):
 async def read_root(request: Request):
     return HTMLResponse(content=open("app/templates/index.html").read(), status_code=200)
 
+@app.get("/avgHRavgSpO2weightbpSbpD", response_class=HTMLResponse)
+async def avgHRavgSpO2weightbpSbpD(request: Request):
+    data = await request.json()
+    if data is None:
+        return {"message": "No data received"}
+    else:
+        return {
+            "message": "Data received",
+            "heart_rate": data.get("avgHR"),
+            "spO2": data.get("avgSpO2"),
+            "weight": data.get("weight"),
+            "bpS": data.get("bpS"),
+            "bpD": data.get("bpD")
+        }
+
 @app.get("/dashboard/user/{username}", response_class=HTMLResponse)
 async def read_dashboard(username: str, request: Request):
     if(await verify_user(username, request)):
