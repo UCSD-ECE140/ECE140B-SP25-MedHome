@@ -102,7 +102,7 @@ async def dataPost(request: Request):
 async def read_root(request: Request):
     return HTMLResponse(content=open("app/templates/index.html").read(), status_code=200)
 
-@app.get("/avgHRavgSpO2weightbpSbpD", response_class=HTMLResponse)
+@app.post("/avgHRavgSpO2weightbpSbpD", response_class=HTMLResponse)
 async def avgHRavgSpO2weightbpSbpD(request: Request):
     data = await request.json()
     if data is None:
