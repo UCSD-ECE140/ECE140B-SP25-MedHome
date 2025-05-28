@@ -124,9 +124,16 @@ We aim to help two key groups:
   - Get exporting of data feature working
   - Data analysis algorithms for user data
   - Clean up pages to look like proposed wireframes
-  - Final testing & deployment of website + ESP32 System  
-- **Hardware**:  
-  - Final debugging of full chair setup  
+  - Consolidate all vital measurement code into one script
+  - Final testing & deployment of website + ESP32 System
+- **Hardware**:
+  - Hack I2C bus on new blood pressure monitor, validate data, manipulate buttons
+     - Old BPM works but new one could be better
+  - Reprint enclosure for final showcase
+     - Lid doesn't fit properly had to cut it   
+  - Fix up weight base plate make it look nicer
+  - Recrimp wire connections, sometimes loose connections cause issues with I2C communication
+  - Final debugging of kit set up
 
 ---
 
