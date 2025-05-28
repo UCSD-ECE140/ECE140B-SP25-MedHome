@@ -98,7 +98,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                 username VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
-                serial_num VARCHAR(255) DEFAULT NULL,
+                serial_num VARCHAR(255) UNIQUE DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """,
@@ -114,7 +114,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
             CREATE TABLE devices (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(255) DEFAULT NULL,
-                serial_num VARCHAR(255) NOT NULL,
+                serial_num VARCHAR(255) NOT NULL UNIQUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
             )

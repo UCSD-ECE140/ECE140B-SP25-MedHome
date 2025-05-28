@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Click the button to toggle visibility
+            button.click();
           }
         } else {
           // Show and draw the chart

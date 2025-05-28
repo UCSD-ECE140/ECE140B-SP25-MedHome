@@ -10,6 +10,13 @@ from typing import Optional
 from datetime import datetime
 import uvicorn
 import os
+import bcrypt
+
+def hash_password(raw_password: str) -> str:
+    return bcrypt.hashpw(raw_password.encode(), bcrypt.gensalt()).decode()
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
 
 from app.database import (
     setup_database,
@@ -45,8 +52,8 @@ async def verify_user(username: str, request: Request) -> bool:
 
 
 INIT_USERS = {
-    "alice": ("Alice", "Smith", "alice@example.com", "alice", "pass123", "MH-830B35DF"),
-    "bob": ("Bob", "Johnson", "bob@example.com", "bob", "pass456", "MH-EAF7EF67")
+    "alice": ("Alice", "Smith", "alice@example.com", "alice", hash_password("pass123"), "MH-830B35DF"),
+    "bob": ("Bob", "Johnson", "bob@example.com", "bob", hash_password("pass456"), "MH-EAF7EF67")
 }
 
 def generate_serial_number() -> str:
@@ -184,7 +191,7 @@ async def signup(request: Request):
     first_name = form_data.get("fname")
     last_name = form_data.get("lname")
     email = form_data.get("email")
-    password = form_data.get("password")
+    password = hash_password(form_data.get("password"))
 
     # Check if username already exists
     existing_user = await get_user_by_username(username)
@@ -225,7 +232,7 @@ async def login(request: Request):
     # Check if username exists and password matches
     user = await get_user_by_username(username)
     if user is not None:
-        if user["password"] == password:
+        if verify_password(password, user["password"]):
             pass
         else:
             raise HTTPException(status_code=401, detail="Invalid password")
