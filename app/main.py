@@ -45,9 +45,20 @@ async def verify_user(username: str, request: Request) -> bool:
 
 
 INIT_USERS = {
-    "alice": ("Alice", "Smith", "alice@example.com", "alice", "pass123"),
-    "bob": ("Bob", "Johnson", "bob@example.com", "bob", "pass456")
+    "alice": ("Alice", "Smith", "alice@example.com", "alice", "pass123", "MH-830B35DF"),
+    "bob": ("Bob", "Johnson", "bob@example.com", "bob", "pass456", "MH-EAF7EF67")
 }
+
+def generate_serial_number() -> str:
+    """Generate a unique serial number."""
+    return f"MH-{uuid.uuid4().hex[:8].upper()}"
+
+INIT_USER_DEVICES = {
+    ("alice", "MH-830B35DF"),
+    ("bob", "MH-EAF7EF67")
+}
+
+INIT_DEVICES = [generate_serial_number() for i in range(2)]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -57,7 +68,7 @@ async def lifespan(app: FastAPI):
     """
     # Startup: Setup resources
     try:
-        await setup_database(INIT_USERS)  # Make sure setup_database is async
+        await setup_database(INIT_USERS, INIT_USER_DEVICES, INIT_DEVICES)  # Make sure setup_database is async
         print("Database setup completed")
         yield
     finally:

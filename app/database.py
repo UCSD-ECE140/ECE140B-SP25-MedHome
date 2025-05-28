@@ -83,7 +83,7 @@ def get_db_connection(
         f"Last error: {last_error}"
     )
     
-async def setup_database(initial_users: dict = None, initial_devices: dict = None):
+async def setup_database(initial_users: dict = None, initial_user_devices: dict = None, initial_devices: dict = None):
     """Creates user and session tables and populates initial user data if provided."""
     connection = None
     cursor = None
@@ -113,7 +113,7 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         "devices": """
             CREATE TABLE devices (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(255) NOT NULL,
+                username VARCHAR(255) DEFAULT NULL,
                 serial_num VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
@@ -153,22 +153,33 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         # Insert initial users if provided
         if initial_users:
             try:
-                insert_query = "INSERT INTO users (first_name, last_name, email, username, password) VALUES (%s, %s, %s, %s, %s)"
-                for username, (first_name, last_name, email, username, password) in initial_users.items():
-                    cursor.execute(insert_query, (first_name, last_name, email, username, password))
+                insert_query = "INSERT INTO users (first_name, last_name, email, username, password, serial_num) VALUES (%s, %s, %s, %s, %s, %s)"
+                for username, (first_name, last_name, email, username, password, serial_num) in initial_users.items():
+                    cursor.execute(insert_query, (first_name, last_name, email, username, password, serial_num))
                 connection.commit()
                 logger.info(f"Inserted {len(initial_users)} initial users")
             except Error as e:
                 logger.error(f"Error inserting initial users: {e}")
                 raise
         
+        if initial_user_devices:
+            try:
+                insert_query = "INSERT INTO devices (username, serial_num) VALUES (%s, %s)"
+                for username, serial in initial_user_devices:
+                    cursor.execute(insert_query, (username, serial))
+                connection.commit()
+                logger.info(f"Inserted {len(initial_user_devices)} preloaded devices with users")
+            except Error as e:
+                logger.error(f"Error inserting initial devices: {e}")
+                raise
+            
         if initial_devices:
             try:
                 insert_query = "INSERT INTO devices (serial_num) VALUES (%s)"
                 for serial in initial_devices:
                     cursor.execute(insert_query, (serial,))
                 connection.commit()
-                logger.info(f"Inserted {len(initial_devices)} preloaded devices")
+                logger.info(f"Inserted {len(initial_devices)} preloaded devices without users")
             except Error as e:
                 logger.error(f"Error inserting initial devices: {e}")
                 raise
