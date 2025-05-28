@@ -5,6 +5,7 @@ import time
 import logging
 from typing import Optional
 from mysql.connector import Error
+import uuid
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +27,11 @@ DB_CONFIG = {
     # "ssl_ca": os.getenv('MYSQL_SSL_CA'),
     # "ssl_verify_identity": True
 }
+
+
+def generate_serial_number() -> str:
+    """Generate a unique serial number."""
+    return f"MH-{uuid.uuid4().hex[:8].upper()}"
 
 def get_db_connection(
     max_retries: int = 12,  # 12 retries = 1 minute total (12 * 5 seconds)
@@ -92,6 +98,7 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
                 username VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
+                serial_num VARCHAR(255) DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """,
@@ -107,7 +114,7 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
             CREATE TABLE devices (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(255) NOT NULL,
-                device_mac VARCHAR(255) NOT NULL,
+                serial_num VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
             )
@@ -119,16 +126,19 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Drop and recreate tables one by one
-        for table_name in ["sessions", "devices", "users"]:
-            # Drop table if exists
-            logger.info(f"Dropping table {table_name} if exists...")
-            cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+        # Check if tables already exist and clear sessions only if they do
+        cursor.execute("SHOW TABLES")
+        existing_tables = [table[0] for table in cursor.fetchall()]
+        if all(table in existing_tables for table in table_schemas.keys()):
+            logger.info("Tables already exist. Clearing sessions table...")
+            cursor.execute("DELETE FROM sessions")
             connection.commit()
-
+            return
+        else:
+            logger.info("Tables do not exist. Proceeding to drop and recreate tables...")
+            
         # Recreate tables one by one
         for table_name, create_query in table_schemas.items():
-
             try:
                 # Create table
                 logger.info(f"Creating table {table_name}...")
@@ -154,11 +164,11 @@ async def setup_database(initial_users: dict = None, initial_devices: dict = Non
         
         if initial_devices:
             try:
-                insert_query = "INSERT INTO devices (username, device_mac) VALUES (%s, %s)"
-                for username, device_mac in initial_devices.items():
-                    cursor.execute(insert_query, (username, device_mac))
+                insert_query = "INSERT INTO devices (serial_num) VALUES (%s)"
+                for serial in initial_devices:
+                    cursor.execute(insert_query, (serial,))
                 connection.commit()
-                logger.info(f"Inserted {len(initial_devices)} initial devices")
+                logger.info(f"Inserted {len(initial_devices)} preloaded devices")
             except Error as e:
                 logger.error(f"Error inserting initial devices: {e}")
                 raise
@@ -227,7 +237,7 @@ async def get_device_by_username(username: str) -> Optional[dict]:
         if connection and connection.is_connected():
             connection.close() 
 
-async def get_device_by_device_mac(device_mac: str) -> Optional[dict]:        
+async def get_device_by_serial_num(serial_num: str) -> Optional[dict]:        
     """
     Retrieve device from database by device mac.
     """
@@ -236,25 +246,22 @@ async def get_device_by_device_mac(device_mac: str) -> Optional[dict]:
     try:
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM devices WHERE device_mac = %s", (device_mac,))
+        cursor.execute("SELECT * FROM devices WHERE serial_num = %s", (serial_num,))
         return cursor.fetchone()
     finally:
         if cursor:
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
+            
+def get_unassigned_serial(cursor) -> Optional[str]:
+    cursor.execute("SELECT serial_num FROM devices WHERE username IS NULL LIMIT 1")
+    result = cursor.fetchone()
+    return result[0] if result else None
 
 async def create_user(username: str, first_name: str, last_name: str, email: str, password: str) -> Optional[int]:
     """
-    Create a new user in the database.
-
-    Args:
-        username (str): The username of the new user
-        password (str): The password of the new user
-        first_name (str): The first name of the new user
-        last_name (str): The last name of the new user
-        email (str): The email of the new user
-
+    Create a new user in the database and assign an available device serial number if available.
 
     Returns:
         int: The ID of the newly created user
@@ -264,25 +271,45 @@ async def create_user(username: str, first_name: str, last_name: str, email: str
     try:
         connection = get_db_connection()
         cursor = connection.cursor()
-        insert_query = "INSERT INTO users (first_name, last_name, email, username, password) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(insert_query, (first_name, last_name, email, username, password))
+
+        # Fetch an available unassigned serial number
+        cursor.execute("SELECT serial_num FROM devices WHERE username IS NULL LIMIT 1")
+        serial_result = cursor.fetchone()
+        serial_num = serial_result[0] if serial_result else None
+
+        # Insert the user with the serial number if available
+        insert_query = """
+            INSERT INTO users (first_name, last_name, email, username, password, serial_num)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (first_name, last_name, email, username, password, serial_num))
         connection.commit()
-        logger.info(f"User {username} created successfully")
-        return cursor.lastrowid
-    
+        user_id = cursor.lastrowid
+        logger.info(f"User {username} created successfully with serial number {serial_num}")
+
+        # Update the devices table to assign the serial number to the user
+        if serial_num:
+            cursor.execute(
+                "UPDATE devices SET username = %s WHERE serial_num = %s", (username, serial_num)
+            )
+            connection.commit()
+
+        return user_id
+
     finally:
         if cursor:
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
+
             
-async def create_device(username: str, device_mac: str) -> Optional[int]:
+async def create_device(username: str, serial_num: str) -> Optional[int]:
     """
     Create a new device in the database.
 
     Args:
         username (str): The username of the user registered with the device
-        device_mac (str): The mac address of the new device
+        serial_num (str): The mac address of the new device
 
     Returns:
         int: The ID of the newly registered device
@@ -293,7 +320,7 @@ async def create_device(username: str, device_mac: str) -> Optional[int]:
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO devices (username, device_mac) VALUES (%s, %s)", (username, device_mac)
+            "INSERT INTO devices (username, serial_num) VALUES (%s, %s)", (username, serial_num)
         )
         connection.commit()
         return cursor.lastrowid

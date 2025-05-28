@@ -20,7 +20,7 @@ from app.database import (
     delete_session,
     create_user,
     create_device,
-    get_device_by_device_mac,
+    get_device_by_serial_num,
     get_device_by_username,
     delete_device
 )
