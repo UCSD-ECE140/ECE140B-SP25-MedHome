@@ -38,6 +38,8 @@ from app.database import (
     delete_device
 )
 
+from app.pdf import generate_pdf_report
+
 async def verify_user(username: str, request: Request) -> bool:
     """
     Verify if the provided username matches the current session of the client.
