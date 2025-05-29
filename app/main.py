@@ -189,24 +189,29 @@ async def signup_page(request: Request):
 
 @app.post("/signup", response_class=HTMLResponse)
 async def signup(request: Request):
-    """Create a new user and redirect to /login"""
-    form_data = await request.form()
-    username = form_data.get("user")
-    first_name = form_data.get("fname")
-    last_name = form_data.get("lname")
-    email = form_data.get("email")
-    password = hash_password(form_data.get("password"))
+    try:
+        """Create a new user and redirect to /login"""
+        form_data = await request.form()
+        username = form_data.get("user")
+        first_name = form_data.get("fname")
+        last_name = form_data.get("lname")
+        email = form_data.get("email")
+        password = hash_password(form_data.get("password"))
 
-    # Check if username already exists
-    existing_user = await get_user_by_username(username)
-    if existing_user is not None:
-        raise HTTPException(status_code=400, detail="Username already exists")
+        # Check if username already exists
+        existing_user = await get_user_by_username(username)
+        if existing_user is not None:
+            raise HTTPException(status_code=400, detail="Username already exists")
 
-    # Create new user
-    await create_user(username, first_name, last_name, email, password)
+        # Create new user
+        await create_user(username, first_name, last_name, email, password)
 
-    # Redirect to /login
-    return RedirectResponse(url="/login", status_code=302)
+        # Redirect to /login
+        return RedirectResponse(url="/login", status_code=302)
+    
+    except Exception as e:
+        print(f"[!] Signup failed: {e}")
+        return HTMLResponse(content="Signup failed: " + str(e), status_code=500)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
