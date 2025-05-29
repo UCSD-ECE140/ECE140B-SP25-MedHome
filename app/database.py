@@ -119,6 +119,19 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
             )
+        """,
+        "data": """
+            CREATE TABLE data (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_name INT NOT NULL,
+                serial_num VARCHAR(255) NOT NULL,
+                avgHR INT DEFAULT NULL,
+                avgSpO2 INT DEFAULT NULL,
+                weight INT DEFAULT NULL,
+                bpS INT DEFAULT NULL,
+                bpD INT DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """
     }
 
@@ -231,6 +244,23 @@ async def get_user_by_id(user_id: int) -> Optional[dict]:
         if connection and connection.is_connected():
             connection.close()
 
+async def get_user_by_serial_num(serial_num: str) -> Optional[dict]:
+    """
+    Retrieve user from database by device serial number.
+    """
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE serial_num = %s", (serial_num,))
+        return cursor.fetchone()
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
 async def get_device_by_username(username: str) -> Optional[dict]:
     """
     Retrieve device from database by username.
@@ -316,7 +346,6 @@ async def create_user(username: str, first_name: str, last_name: str, email: str
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
-
             
 async def create_device(username: str, serial_num: str) -> Optional[int]:
     """
@@ -420,6 +449,38 @@ async def delete_session(session_id: str) -> bool:
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("DELETE FROM sessions WHERE id = %s", (session_id,))
+        connection.commit()
+        return True
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+async def add_data_to_user(username: str, data: dict) -> bool:
+    """
+    Add additional data to a user in the database.
+    """
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            INSERT INTO data (user_name, serial_num, avgHR, avgSpO2, weight, bpS, bpD)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                username,
+                data.get("serial_num"),
+                data.get("avgHR"),
+                data.get("avgSpO2"),
+                data.get("weight"),
+                data.get("bpS"),
+                data.get("bpD"),
+            ),
+        )
         connection.commit()
         return True
     finally:
