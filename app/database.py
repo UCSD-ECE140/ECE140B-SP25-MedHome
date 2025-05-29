@@ -1,4 +1,5 @@
 import os
+from fastapi import HTTPException
 import mysql.connector
 from dotenv import load_dotenv
 import time
@@ -287,6 +288,9 @@ async def create_user(username: str, first_name: str, last_name: str, email: str
         cursor.execute("SELECT serial_num FROM devices WHERE username IS NULL LIMIT 1")
         serial_result = cursor.fetchone()
         serial_num = serial_result[0] if serial_result else None
+        
+        if not serial_num:
+            raise HTTPException(status_code=500, detail="No available device to assign.")
 
         # Insert the user with the serial number if available
         insert_query = """

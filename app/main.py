@@ -16,7 +16,11 @@ def hash_password(raw_password: str) -> str:
     return bcrypt.hashpw(raw_password.encode(), bcrypt.gensalt()).decode()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    try:
+        return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    except ValueError:
+        print(f"[!] Invalid password hash detected: {hashed_password}")
+        return False
 
 from app.database import (
     setup_database,
