@@ -38,7 +38,8 @@ from app.database import (
     delete_device
 )
 
-from app.pdf import generate_pdf_report
+from app.pdf import generate_health_report
+
 
 async def verify_user(username: str, request: Request) -> bool:
     """
