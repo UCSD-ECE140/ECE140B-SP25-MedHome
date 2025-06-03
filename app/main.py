@@ -11,6 +11,7 @@ from datetime import datetime
 import uvicorn
 import os
 import bcrypt
+from app.data_analysis import dataAnalyzer
 
 def hash_password(raw_password: str) -> str:
     return bcrypt.hashpw(raw_password.encode(), bcrypt.gensalt()).decode()
@@ -35,7 +36,8 @@ from app.database import (
     create_device,
     get_device_by_serial_num,
     get_device_by_username,
-    delete_device
+    delete_device, 
+    get_data_from_user
 )
 
 from app.pdf import generate_health_report
@@ -149,6 +151,38 @@ async def avgHRavgSpO2weightbpSbpD(request: Request):
             "bpS": data["bpS"],
             "bpD": data["bpD"]
         }
+    
+@app.get("/dashboard/user/{username}/data") 
+async def get_dashboard_data(username: str, request: Request): 
+    if(await verify_user(username, request)): 
+        theData = await get_data_from_user(username); 
+        # print(theData); 
+        # return HTMLResponse(content = theData, status_code = 200); 
+        # Data order: avgHR, avgSpO2, weight, bpS, bpD
+
+        avgHR = []; avgSpO2 = []; weight = []; bpS = []; bpD = []; 
+
+        for i in range(7):
+            aDataList = theData[i]; 
+            avgHR.append(aDataList[0]); 
+            avgSpO2.append(aDataList[1]); 
+            weight.append(aDataList[2]); 
+            bpS.append(aDataList[3]); 
+            bpD.append(aDataList[4]); 
+
+        theResponse = ""; 
+        theAnalyst = dataAnalyzer(); 
+
+        theResponse += theAnalyst.analyze_avgHR(avgHR); 
+        theResponse += theAnalyst.analyze_avgSpO2(avgSpO2); 
+        theResponse += theAnalyst.analyze_weight(weight); 
+        theResponse += theAnalyst.analyze_blood_pressure(bpS, bpD); 
+    
+        return HTMLResponse(content = "{\"theResponse\": \"" + theResponse + "\"}", status_code = 200); 
+
+
+    else:
+        return HTMLResponse(content=get_error_html(username), status_code=403)
 
 @app.get("/dashboard/user/{username}", response_class=HTMLResponse)
 async def read_dashboard(username: str, request: Request):

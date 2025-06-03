@@ -84,8 +84,6 @@ void postRequest(int avgHR, int avgSpO2, float weight, int bpS, int bpD) {
   Serial.print("HTTP Response code: ");
   Serial.println(httpResponseCode);
   String response = http.getString();
-  lcd.setCursor(0, 0);
-  lcd.print(response);
   Serial.println(response);
   delay(750);
 
@@ -157,6 +155,7 @@ void readVitalsAverage(int &averageHR, int &averageSpO2) {
 }
 
 void readWeight(float &weight) {
+  weight = 0; 
   float totalValue = 0; 
   float theReading = 0;
   int sampleRate = TOTAL_SAMPLES / 2;  
@@ -164,7 +163,7 @@ void readWeight(float &weight) {
   for(int i = 0; i <= sampleRate; i++) { // Read weight scale until reached sample count, TOTAL_SAMPLES
     theReading = theScale.read(); 
     totalValue += abs(theReading);
-    // Serial.println(totalValue);  
+    Serial.println(totalValue);  
     delay(10); 
   }
 
@@ -196,7 +195,7 @@ void setup() {
   Serial.begin(115200);
   Wire.begin(); // SDA, SCK 
   // checkAddress(); 
-  // connectToWiFi();
+  connectToWiFi();
   LCDSetup(); 
   delay(500); 
   Serial.begin(115200);
@@ -212,7 +211,9 @@ void setup() {
   Serial.println("Setup Complete."); 
 
   lcd.setCursor(0, 0);
-  lcd.print("Device Setup Completed.");
+  lcd.print("Device Setup ");
+  lcd.setCursor(0, 1);
+  lcd.print("Completed.");
   delay(1000);
   lcd.clear();
 }
@@ -230,22 +231,27 @@ void loop() {
     lcd.clear();
 
     lcd.setCursor(0, 0);
-    lcd.print("Reading Vitals...");
-    Serial.println("Reading Vitals...");
+    lcd.print("Reading Heartrate");
+    Serial.println("Reading Heartrate");
+    lcd.setCursor(0, 1);
+    lcd.print("Reading Oxygen");
+    Serial.println("Reading Oxygen");
     delay(1000);
     readVitalsAverage(avgHR, avgSpO2);
     lcd.clear();
 
     lcd.setCursor(0, 0);
-    lcd.print("Reading Weight...");
-    Serial.println("Reading Weight...");
+    lcd.print("Reading Weight");
+    Serial.println("Reading Weight");
     delay(1000);
     readWeight(weight);
     lcd.clear();
 
     lcd.setCursor(0, 0);
-    lcd.print("Reading BP...");
-    Serial.println("Reading Blood Pressure...");
+    lcd.print("Reading Blood"); 
+    lcd.setCursor(0, 1);
+    lcd.print("Pressure"); 
+    Serial.println("Reading Blood Pressure");
     delay(1000);
     readBP(bpS, bpD);
     lcd.clear();
@@ -277,17 +283,7 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("Blood Pressure: ");
     Serial.print("Blood Pressure: ");
-
-    lcd.setCursor(0, 1);
-    lcd.print(bpS);
-    lcd.print("/");
-    lcd.print(bpD);
-    Serial.print(bpS);
-    Serial.print("/");
-    Serial.println(bpD);
-    delay(1000);
-    lcd.clear();
-    
+ 
     postRequest(avgHR, avgSpO2, weight, bpS, bpD);
 
     delay(1000);

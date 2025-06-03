@@ -7,6 +7,7 @@ import logging
 from typing import Optional
 from mysql.connector import Error
 import uuid
+import random 
 
 # Load environment variables
 load_dotenv()
@@ -84,7 +85,7 @@ def get_db_connection(
         f"Last error: {last_error}"
     )
     
-async def setup_database(initial_users: dict = None, initial_user_devices: dict = None, initial_devices: dict = None):
+async def setup_database(initial_users: dict = None, initial_user_devices: dict = None, initial_devices: dict = None, initial_data: dict = None):
     """Creates user and session tables and populates initial user data if provided."""
     connection = None
     cursor = None
@@ -123,7 +124,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
         "data": """
             CREATE TABLE data (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                user_name INT NOT NULL,
+                username VARCHAR(255) NOT NULL,
                 serial_num VARCHAR(255) NOT NULL,
                 avgHR INT DEFAULT NULL,
                 avgSpO2 INT DEFAULT NULL,
@@ -197,6 +198,30 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
             except Error as e:
                 logger.error(f"Error inserting initial devices: {e}")
                 raise
+        
+        initial_data = True; 
+        if initial_data: 
+            try:
+                print("Adding data !"); 
+                insert_query = """
+                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD) VALUES ("alice", "MH-830B35DF", %s, %s, %s, %s, %s); 
+                """; 
+
+                for i in range(7): 
+                    rand_avgHR = random.randrange(60, 100); 
+                    rand_avgSpO2 = random.randrange(95, 100); 
+                    rand_weight = random.randrange(150, 155); 
+                    rand_bpS = random.randrange(115, 120); 
+                    rand_bpD = random.randrange(75, 80); 
+                    
+                    cursor.execute(insert_query, (rand_avgHR, rand_avgSpO2, rand_weight, rand_bpS, rand_bpD)); 
+            
+                connection.commit(); 
+
+            except Error as e:
+                logger.error(f"Error inserting initial data: {e}")
+                raise
+
 
     except Exception as e:
         logger.error(f"Database setup failed: {e}")
@@ -483,6 +508,26 @@ async def add_data_to_user(username: str, data: dict) -> bool:
         )
         connection.commit()
         return True
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+
+async def get_data_from_user(username: str):
+    """
+    Get data for a user from the database 
+    """
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection(); 
+        cursor = connection.cursor(); 
+        cursor.execute("SELECT avgHR, avgSpO2, weight, bpS, bpD from data where username = %s;", (username,)); 
+
+        return cursor.fetchall(); 
+
     finally:
         if cursor:
             cursor.close()

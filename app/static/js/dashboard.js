@@ -37,6 +37,17 @@ logoutForm.addEventListener('click', function (event) {
 let charts = {};
 
 document.addEventListener("DOMContentLoaded", function () {
+  const analysisButton = document.getElementById("analysis-button"); 
+  const analysisResponse = document.getElementById("analysis-response"); 
+  analysisButton.addEventListener("click", async function(theEvent) {
+    // alert("Click test !"); 
+    theEvent.preventDefault();  
+    theData = await getData(); 
+    // console.log(theData["theResponse"]); 
+    analysisResponse.textContent = theData["theResponse"]; 
+  }); 
+
+
   // Attach click handlers to all metric buttons
   document.querySelectorAll(".metric-card").forEach(card => {
     const type = card.getAttribute("data-type");
@@ -71,6 +82,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+async function getData() {
+    const theResponse = await fetch(`/dashboard/user/${username}/data`); 
+    const theData = await theResponse.json(); 
+    
+    return theData;  
+}
 
 // Chart rendering function
 function renderChart(canvasId, type) {
