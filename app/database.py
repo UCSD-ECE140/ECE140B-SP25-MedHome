@@ -207,7 +207,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                 INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ('alice', 'MH-830B35DF', %s, %s, %s, %s, %s, %s);
                 """; 
 
-                for i in range(7): 
+                for i in range(10): 
                     rand_avgHR = random.randrange(60, 100); 
                     rand_avgSpO2 = random.randrange(95, 100); 
                     rand_weight = random.randrange(150, 155); 
@@ -223,7 +223,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                 insert_query = """
                 INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ('bob', 'MH-EAF7EF67', %s, %s, %s, %s, %s, %s);
                 """;
-                for i in range(7):
+                for i in range(10):
                     rand_avgHR = random.randrange(120, 150); 
                     rand_avgSpO2 = random.randrange(80, 85); 
                     rand_weight = random.randrange(150 + i*2, 155 + i*2);
@@ -541,7 +541,17 @@ async def get_data_from_user(username: str):
     try:
         connection = get_db_connection(); 
         cursor = connection.cursor(); 
-        cursor.execute("SELECT avgHR, avgSpO2, weight, bpS, bpD, created_at from data where username = %s;", (username,)); 
+        cursor.execute("""
+            SELECT *
+            FROM (
+                SELECT avgHR, avgSpO2, weight, bpS, bpD, created_at
+                FROM data
+                WHERE username = %s
+                ORDER BY created_at DESC
+                LIMIT 7
+            ) AS recent_data
+            ORDER BY created_at ASC;
+        """, (username,))
 
         return cursor.fetchall(); 
 

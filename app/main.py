@@ -165,11 +165,14 @@ async def get_dashboard_data(username: str, request: Request):
         diastolic = [row[4] for row in theData]
         dates = [row[5].strftime("%b %d") for row in theData]
 
-        # You can still generate analysis string if needed
-        analysis = dataAnalyzer().analyze_avgHR(avgHR)
-        analysis += dataAnalyzer().analyze_avgSpO2(avgSpO2)
-        analysis += dataAnalyzer().analyze_weight(weight)
-        analysis += dataAnalyzer().analyze_blood_pressure(systolic, diastolic)
+        if len(theData) < 7:
+            analysis = "Not enough data points to perform a full analysis. Please track at least 7 days.\n"
+        else:
+            theAnalyst = dataAnalyzer()
+            analysis = theAnalyst.analyze_avgHR(avgHR)
+            analysis += theAnalyst.analyze_avgSpO2(avgSpO2)
+            analysis += theAnalyst.analyze_weight(weight)
+            analysis += theAnalyst.analyze_blood_pressure(systolic, diastolic)
 
         return JSONResponse(content={
             "bpm": avgHR,
@@ -234,24 +237,27 @@ async def export(username: str, request: Request, body: Optional[dict] = None):
     if not data:
         raise HTTPException(status_code=404, detail="No data found for user")
     
-    theData = await get_data_from_user(username);
+    theData = await get_data_from_user(username)
 
     avgHR = []; avgSpO2 = []; weight = []; bpS = []; bpD = []; 
     for i in range(7):
-        aDataList = theData[i]; 
-        avgHR.append(aDataList[0]); 
-        avgSpO2.append(aDataList[1]); 
-        weight.append(aDataList[2]); 
-        bpS.append(aDataList[3]); 
-        bpD.append(aDataList[4]); 
-    theResponse = ""; 
-    theAnalyst = dataAnalyzer(); 
+        aDataList = theData[i]
+        avgHR.append(aDataList[0])
+        avgSpO2.append(aDataList[1])
+        weight.append(aDataList[2])
+        bpS.append(aDataList[3])
+        bpD.append(aDataList[4])
+    theResponse = ""
 
-    theResponse += theAnalyst.analyze_avgHR(avgHR); 
-    theResponse += theAnalyst.analyze_avgSpO2(avgSpO2); 
-    theResponse += theAnalyst.analyze_weight(weight); 
-    theResponse += theAnalyst.analyze_blood_pressure(bpS, bpD);
-    
+    if len(theData) < 7:
+        theResponse = "Not enough data points to perform a full analysis. Please track at least 7 days.\n"
+    else:
+        theAnalyst = dataAnalyzer()
+        theResponse = theAnalyst.analyze_avgHR(avgHR)
+        theResponse += theAnalyst.analyze_avgSpO2(avgSpO2)
+        theResponse += theAnalyst.analyze_weight(weight)
+        theResponse += theAnalyst.analyze_blood_pressure(bpS, bpD)
+
     dates = [d[5].strftime("%Y-%m-%d") for d in data]
     bpm = [d[0] for d in data]
     spo2 = [d[1] for d in data]

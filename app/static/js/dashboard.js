@@ -106,33 +106,72 @@ async function renderChart(canvasId, type) {
   const response = await fetch(`/dashboard/user/${username}/data`);
   const userData = await response.json();
 
+  if (type === "bp") {
+    const systolic = userData["systolic"];
+    const diastolic = userData["diastolic"];
+
+    const systolicNotValid = !systolic || systolic.length == 0;
+    const diastolicNotValid = !diastolic || diastolic.length == 0;
+
+    if (systolicNotValid || diastolicNotValid) {
+      console.warn("Blood pressure data missing or empty");
+      canvas.style.display = "block";
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "gray";
+      ctx.textAlign = "center";
+      ctx.fillText("Not enough data to generate chart", canvas.width / 2, canvas.height / 2);
+
+      const button = document.querySelector(`button[data-type="${type}"]`);
+      if (button) button.textContent = "Show graph (no data)";
+      return;
+    }
+  }
+
+
+  if (type !== "bp" && (!userData || !userData[type] || userData[type].length === 0)) {
+    console.warn(`Not enough data to display chart for: ${type}`);
+    canvas.style.display = "block";
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "gray";
+    ctx.textAlign = "center";
+    ctx.fillText("Not enough data to generate chart", canvas.width / 2, canvas.height / 2);
+
+    const button = document.querySelector(`button[data-type="${type}"]`);
+    if (button) button.textContent = "Show graph (no data)";
+    return;
+  }
+
   let label = "";
   let data = [];
   let labels = userData.dates;  // use actual date labels from backend
 
   switch (type) {
-    case "heartrate":
-      label = "Heart Rate (bpm)";
-      data = userData.bpm;
-      break;
-    case "bp":
-      label = "Blood Pressure (mmHg)";
-      data = {
-        systolic: userData.systolic,
-        diastolic: userData.diastolic
-      };
-      break;
-    case "weight":
-      label = "Weight (lbs)";
-      data = userData.weight;
-      break;
-    case "spo2":
-      label = "Oxygen Saturation (%)";
-      data = userData.spo2;
-      break;
-    default:
-      label = "Unknown Metric";
-  }
+  case "bpm":
+    label = "Heart Rate (bpm)";
+    data = [...userData.bpm];
+    break;
+  case "bp":
+    label = "Blood Pressure (mmHg)";
+    data = {
+      systolic: [...userData.systolic],
+      diastolic: [...userData.diastolic]
+    };
+    break;
+  case "weight":
+    label = "Weight (lbs)";
+    data = [...userData.weight];
+    break;
+  case "spo2":
+    label = "Oxygen Saturation (%)";
+    data = [...userData.spo2];
+    break;
+  default:
+    label = "Unknown Metric";
+}
 
   // Convert BP strings to show as text if needed, or just graph systolic
   const numericData = type === "bp" ? userData.systolic : data;
