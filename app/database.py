@@ -204,7 +204,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
             try:
                 print("Adding data !"); 
                 insert_query = """
-                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ("alice", "MH-830B35DF", %s, %s, %s, %s, %s, %s);
+                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ('alice', 'MH-830B35DF', %s, %s, %s, %s, %s, %s);
                 """; 
 
                 for i in range(7): 
@@ -221,7 +221,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                 
                 # Insert data for user 'bob'
                 insert_query = """
-                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ("bob", "MH-EAF7EF67", %s, %s, %s, %s, %s, %s);
+                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ('bob', 'MH-EAF7EF67', %s, %s, %s, %s, %s, %s);
                 """;
                 for i in range(7):
                     rand_avgHR = random.randrange(120, 150); 
