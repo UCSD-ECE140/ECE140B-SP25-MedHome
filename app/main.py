@@ -161,6 +161,7 @@ async def get_dashboard_data(username: str, request: Request):
         avgHR = [row[0] for row in theData]
         avgSpO2 = [row[1] for row in theData]
         weight = [row[2] for row in theData]
+        print(theData);
         systolic = [row[3] for row in theData]
         diastolic = [row[4] for row in theData]
         dates = [row[5].strftime("%b %d") for row in theData]
