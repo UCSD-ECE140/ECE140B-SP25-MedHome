@@ -152,37 +152,37 @@ async def avgHRavgSpO2weightbpSbpD(request: Request):
             "bpD": data["bpD"]
         }
     
-@app.get("/dashboard/user/{username}/data") 
-async def get_dashboard_data(username: str, request: Request): 
-    if(await verify_user(username, request)): 
-        theData = await get_data_from_user(username); 
-        # print(theData); 
-        # return HTMLResponse(content = theData, status_code = 200); 
-        # Data order: avgHR, avgSpO2, weight, bpS, bpD
+@app.get("/dashboard/user/{username}/data")
+async def get_dashboard_data(username: str, request: Request):
+    if await verify_user(username, request):
+        theData = await get_data_from_user(username)
 
-        avgHR = []; avgSpO2 = []; weight = []; bpS = []; bpD = []; 
+        # Extract raw values
+        avgHR = [row[0] for row in theData]
+        avgSpO2 = [row[1] for row in theData]
+        weight = [row[2] for row in theData]
+        systolic = [row[3] for row in theData]
+        diastolic = [row[4] for row in theData]
+        dates = [row[5].strftime("%b %d") for row in theData]
 
-        for i in range(7):
-            aDataList = theData[i]; 
-            avgHR.append(aDataList[0]); 
-            avgSpO2.append(aDataList[1]); 
-            weight.append(aDataList[2]); 
-            bpS.append(aDataList[3]); 
-            bpD.append(aDataList[4]); 
+        # You can still generate analysis string if needed
+        analysis = dataAnalyzer().analyze_avgHR(avgHR)
+        analysis += dataAnalyzer().analyze_avgSpO2(avgSpO2)
+        analysis += dataAnalyzer().analyze_weight(weight)
+        analysis += dataAnalyzer().analyze_blood_pressure(systolic, diastolic)
 
-        theResponse = ""; 
-        theAnalyst = dataAnalyzer(); 
-
-        theResponse += theAnalyst.analyze_avgHR(avgHR); 
-        theResponse += theAnalyst.analyze_avgSpO2(avgSpO2); 
-        theResponse += theAnalyst.analyze_weight(weight); 
-        theResponse += theAnalyst.analyze_blood_pressure(bpS, bpD); 
-    
-        return HTMLResponse(content = "{\"theResponse\": \"" + theResponse + "\"}", status_code = 200); 
-
-
+        return JSONResponse(content={
+            "bpm": avgHR,
+            "spo2": avgSpO2,
+            "weight": weight,
+            "systolic": systolic,
+            "diastolic": diastolic,
+            "dates": dates,
+            "theResponse": analysis
+        })
     else:
         return HTMLResponse(content=get_error_html(username), status_code=403)
+
 
 @app.get("/dashboard/user/{username}", response_class=HTMLResponse)
 async def read_dashboard(username: str, request: Request):

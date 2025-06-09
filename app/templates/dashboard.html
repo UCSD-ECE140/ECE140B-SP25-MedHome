@@ -30,16 +30,14 @@
       <h3 style="margin-block: 0.5rem;">Dashboard</h3>
     </div>
     <div style="text-align: center;" class="user-details">
-      <button id = "analysis-button">Run Analysis</button>
-      <p id = "analysis-response"></p>
+      <button id="analysis-button">Run Analysis</button>
+      <p id="analysis-response" style="margin: 1rem;"></p>
     </div>
     <div class="card-container">
       <!-- Heart Data -->
       <div class="metric-card" data-type="heartrate">
         <h4>Heart Rate</h4>
-        <p>Avg. HR: <span id="avg-hr"></span></p>
-        <p>Max HR: <span id="max-hr"></span></p>
-        <p>Min HR: <span id="min-hr"></span></p>
+        <br>
         <button class="metric-button">Show graph</button>
         <canvas id="heartrateChart"></canvas>
       </div>
@@ -47,15 +45,23 @@
       <!-- Blood Pressure -->
       <div class="metric-card" data-type="bp">
         <h4>Blood Pressure</h4>
-        <p>Value: <span id="bp"></span></p>
+        <br>
         <button class="metric-button">Show graph</button>
         <canvas id="bloodPressureChart"></canvas>
+      </div>
+
+      <!-- Oxygen Saturation -->
+      <div class="metric-card" data-type="spo2">
+        <h4>Oxygen Saturation</h4>
+        <br>
+        <button class="metric-button">Show graph</button>
+        <canvas id="spo2Chart"></canvas>
       </div>
 
       <!-- Weight -->
       <div class="metric-card" data-type="weight">
         <h4>Weight</h4>
-        <p>Current Weight: <span id="weight"></span></p>
+        <br>
         <button class="metric-button">Show graph</button>
         <canvas id="weightChart"></canvas>
       </div>

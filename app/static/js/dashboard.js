@@ -36,14 +36,21 @@ logoutForm.addEventListener('click', function (event) {
 
 let charts = {};
 
-document.addEventListener("DOMContentLoaded", function () {
+async function getData() {
+    const theResponse = await fetch(`/dashboard/user/${username}/data`); 
+    const theData = await theResponse.json(); 
+    
+    return theData;  
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
   const analysisButton = document.getElementById("analysis-button"); 
   const analysisResponse = document.getElementById("analysis-response"); 
   analysisButton.addEventListener("click", async function(theEvent) {
     // alert("Click test !"); 
     theEvent.preventDefault();  
     theData = await getData(); 
-    // console.log(theData["theResponse"]); 
+    console.log(theData); 
     analysisResponse.textContent = theData["theResponse"]; 
   }); 
 
@@ -55,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const canvas = card.querySelector("canvas");
 
     if (button && canvas) {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
         const chartId = canvas.id;
         
         if (canvas.style.display === "block") {
@@ -76,74 +83,102 @@ document.addEventListener("DOMContentLoaded", function () {
           // Show and draw the chart
           canvas.style.display = "block";
           button.textContent = "Hide graph";
-          renderChart(chartId, type);
+          await renderChart(chartId, type);
         }
       });
     }
   });
+
+  // Initial rendering of charts by clicking the buttons
+  document.querySelectorAll(".metric-button").forEach(button => {
+    button.click();
+  });
 });
 
-async function getData() {
-    const theResponse = await fetch(`/dashboard/user/${username}/data`); 
-    const theData = await theResponse.json(); 
-    
-    return theData;  
-}
-
 // Chart rendering function
-function renderChart(canvasId, type) {
+async function renderChart(canvasId, type) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
   const ctx = canvas.getContext("2d");
 
+  // ✅ Use your structured backend data
+  const response = await fetch(`/dashboard/user/${username}/data`);
+  const userData = await response.json();
+
   let label = "";
   let data = [];
-  let labels = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
+  let labels = userData.dates;  // use actual date labels from backend
 
   switch (type) {
     case "heartrate":
       label = "Heart Rate (bpm)";
-      data = [72, 75, 70, 78, 74, 76, 73];
+      data = userData.bpm;
       break;
     case "bp":
-      label = "Blood Pressure";
-      data = [120, 122, 118, 121, 119, 123, 120];
+      label = "Blood Pressure (mmHg)";
+      data = {
+        systolic: userData.systolic,
+        diastolic: userData.diastolic
+      };
       break;
     case "weight":
       label = "Weight (lbs)";
-      data = [150, 149, 151, 148, 150, 149, 152];
+      data = userData.weight;
+      break;
+    case "spo2":
+      label = "Oxygen Saturation (%)";
+      data = userData.spo2;
       break;
     default:
       label = "Unknown Metric";
   }
 
+  // Convert BP strings to show as text if needed, or just graph systolic
+  const numericData = type === "bp" ? userData.systolic : data;
+
   const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: label,
-        data: data,
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: type === "bp" ? [
+      {
+        label: "Systolic",
+        data: data.systolic,
+        borderColor: 'red',
         fill: false,
-        borderColor: 'blue',
         tension: 0.1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true
-        }
       },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
+      {
+        label: "Diastolic",
+        data: data.diastolic,
+        borderColor: 'blue',
+        fill: false,
+        tension: 0.1
+      }
+    ] : [{
+      label: label,
+      data: data,
+      borderColor: 'blue',
+      fill: false,
+      tension: 0.1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
       }
     }
-  });
+  }
+});
+
 
   charts[canvasId] = chart;
 }

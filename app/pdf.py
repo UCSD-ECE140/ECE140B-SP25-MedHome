@@ -110,18 +110,3 @@ def generate_health_report(title, dates, bpm, spo2, weight, systolic, diastolic,
     )
 
 """
-
-if __name__ == "__main__":
-    # Example usage
-    generate_health_report(
-        title="Health Report",
-        dates=["2025-01", "2025-02", "2025-03", "2025-04", "2025-05"],
-        bpm=[72, 75, 78, 74, 77],
-        spo2=[97, 98, 99, 97, 96],
-        weight=[150, 152, 151, 153, 150],
-        systolic=[120, 122, 118, 121, 119],
-        diastolic=[80, 82, 78, 79, 77],
-        patient_name="John Doe",
-        device_serial="SN-0012345678",
-        data_analysis="This is a sample data analysis."
-    )
