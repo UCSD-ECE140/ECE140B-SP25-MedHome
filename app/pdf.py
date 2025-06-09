@@ -4,7 +4,7 @@ import os
 from datetime import date
 import glob
 
-def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patient_name, device_serial):
+def generate_health_report(title, dates, bpm, spo2, weight, systolic, diastolic, patient_name, device_serial, data_analysis):
     output_dir = "./temp"
     os.makedirs(output_dir, exist_ok=True)  # ✅ Create folder if it doesn't exist
     
@@ -15,6 +15,8 @@ def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patien
     def create_plot(y_values, title, ylabel, filename, extra_y=None, extra_label=None):
         plt.figure(figsize=(4, 3))
         plt.plot(dates, y_values, marker='o', label=ylabel)
+        plt.xticks(rotation=45)  # or rotation=30
+        plt.locator_params(axis='x', nbins=5)  # Show ~5 ticks only
         if extra_y is not None:
             plt.plot(dates, extra_y, marker='o', label=extra_label)
         plt.title(title)
@@ -43,7 +45,7 @@ def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patien
 
     pdf.set_font("Arial", 'B', 16)
     pdf.set_y(30)
-    pdf.cell(200, 10, "Health Report", ln=True, align="C")
+    pdf.cell(200, 10, title, ln=True, align="C")
 
     pdf.set_font("Arial", '', 12)
     pdf.cell(200, 8, f"Date: {date.today().isoformat()}", ln=True, align="C")
@@ -68,10 +70,22 @@ def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patien
     for (x, y), img in zip(positions, images):
         pdf.image(os.path.join(output_dir, img), x=x, y=y, w=90, h=60)
 
-    pdf.set_y(265)
+    # Position cursor below the last row of charts
+    pdf.set_y(positions[-1][1] + 65)
+
     pdf.set_draw_color(200, 200, 200)
     pdf.set_line_width(0.2)
     pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(5)
+
+    # Add data analysis
+    if data_analysis:
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(200, 10, "Data Analysis", ln=True, align="L")
+        pdf.set_font("Arial", '', 12)
+        for line in data_analysis.strip().split('\n'):
+            pdf.multi_cell(0, 8, line)
+
 
     pdf_path = os.path.join(output_dir, "health_report.pdf")
     pdf.output(pdf_path)
@@ -91,7 +105,8 @@ def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patien
         systolic=[120, 122, 118, 121, 119],
         diastolic=[80, 82, 78, 79, 77],
         patient_name="John Doe",
-        device_serial="SN-0012345678"
+        device_serial="SN-0012345678",
+        data_analysis="This is a sample data analysis."
     )
 
 """

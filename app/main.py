@@ -219,7 +219,7 @@ async def export_page(username: str, request: Request):
         return HTMLResponse(content=get_error_html(username), status_code=403)
 
 @app.post("/export/user/{username}")
-async def export(username: str, request: Request):
+async def export(username: str, request: Request, body: Optional[dict] = None):
     # ... do auth checks
     if not await verify_user(username, request):
         return HTMLResponse(content=get_error_html(username), status_code=403)
@@ -233,6 +233,25 @@ async def export(username: str, request: Request):
     data = await get_data_from_user(username)
     if not data:
         raise HTTPException(status_code=404, detail="No data found for user")
+    
+    theData = await get_data_from_user(username);
+
+    avgHR = []; avgSpO2 = []; weight = []; bpS = []; bpD = []; 
+    for i in range(7):
+        aDataList = theData[i]; 
+        avgHR.append(aDataList[0]); 
+        avgSpO2.append(aDataList[1]); 
+        weight.append(aDataList[2]); 
+        bpS.append(aDataList[3]); 
+        bpD.append(aDataList[4]); 
+    theResponse = ""; 
+    theAnalyst = dataAnalyzer(); 
+
+    theResponse += theAnalyst.analyze_avgHR(avgHR); 
+    theResponse += theAnalyst.analyze_avgSpO2(avgSpO2); 
+    theResponse += theAnalyst.analyze_weight(weight); 
+    theResponse += theAnalyst.analyze_blood_pressure(bpS, bpD);
+    
     dates = [d[5].strftime("%Y-%m-%d") for d in data]
     bpm = [d[0] for d in data]
     spo2 = [d[1] for d in data]
@@ -244,14 +263,22 @@ async def export(username: str, request: Request):
     # Generate the health report PDF
     try:
         generate_health_report(
+            body.get("title", "Health Report"),
             dates, bpm, spo2, weight, systolic, diastolic,
-            patient_name, device_serial
+            patient_name, device_serial, theResponse
         )
     except Exception as e:
         print(f"[!] Error generating report for user {username}: {e}")
         raise HTTPException(status_code=500, detail="Error generating report")
 
-    return FileResponse("./temp/health_report.pdf", filename="health_report.pdf", media_type="application/pdf")
+    pdf_path = "./temp/health_report.pdf"
+
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        filename="health_report.pdf",
+        headers={"Content-Disposition": 'inline; filename="health_report.pdf"'}
+    )
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):

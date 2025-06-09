@@ -46,7 +46,11 @@ document.querySelector(".export-form").addEventListener("submit", async function
 
     try {
         const response = await fetch(`/export/user/${username}`, {
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title })
         });
 
         if (!response.ok) {
@@ -58,13 +62,8 @@ document.querySelector(".export-form").addEventListener("submit", async function
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${title || "health_report"}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        window.open(url, "_blank");
+
 
     } catch (err) {
         console.error("Export failed:", err);
