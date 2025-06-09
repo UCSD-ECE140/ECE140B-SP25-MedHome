@@ -24,24 +24,13 @@
         </div>
       </div>
     </div>
-    <div class="header">
-      <h1 id="welcome-message">User Details</h1>
-      <h2 id="user-role">Role: {role}</h2>
-      <h2 id="user-name">User: {username}</h2>
+    <h1 id="welcome-message">User Details</h1>
+    <div class="header" style="display: grid; margin: 20px; gap: 10px;">
+      <h2 id="user-name">Username: {username}</h2>
+      <h2 id="firstName">First Name: {firstname}</h2>
+      <h2 id="lastName">Last Name: {lastname}</h2>
       <h2 id="user-email">Email: {email}</h2>
-      <h2 id="user-phone">Phone: {phone}</h2>
-      <h2 id="user-birthdate">Birthdate: {birthdate}</h2>
-    </div>
-    <div class="header">
-      <h2>Registered Devices</h2>
-      <ul id="device-list"></ul>
-    </div>
-    <div class="header">
-      <h2>Add Device</h2>
-      <form class="device-form" action="/profile/user/{username}" method="POST">
-        <input type="text" id="device-name" name="device-name" required />
-        <button class="device-button" type="submit">Add Device</button>
-      </form>
+      <h2 id="registered-device">Registered Device: {device}</h2>
     </div>
     <script src="/static/js/profile.js"></script>
   </body>

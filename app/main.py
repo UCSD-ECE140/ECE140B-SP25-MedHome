@@ -1,6 +1,6 @@
 import mysql.connector
 from fastapi import FastAPI, Request, Response, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -218,9 +218,40 @@ async def export_page(username: str, request: Request):
     else:
         return HTMLResponse(content=get_error_html(username), status_code=403)
 
-@app.post("/export/user/{username}", response_class=HTMLResponse)
+@app.post("/export/user/{username}")
 async def export(username: str, request: Request):
-    return RedirectResponse(url=f"/export/user/{username}", status_code=302)
+    # ... do auth checks
+    if not await verify_user(username, request):
+        return HTMLResponse(content=get_error_html(username), status_code=403)
+    # ... generate PDF via generate_health_report
+    user = await get_user_by_username(username)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    device = await get_device_by_username(username)
+    if device is None:
+        raise HTTPException(status_code=404, detail="Device not found")
+    data = await get_data_from_user(username)
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found for user")
+    dates = [d[5].strftime("%Y-%m-%d") for d in data]
+    bpm = [d[0] for d in data]
+    spo2 = [d[1] for d in data]
+    weight = [d[2] for d in data]
+    systolic = [d[3] for d in data]
+    diastolic = [d[4] for d in data]
+    patient_name = f"{user['first_name']} {user['last_name']}"
+    device_serial = device[0]["serial_num"]
+    # Generate the health report PDF
+    try:
+        generate_health_report(
+            dates, bpm, spo2, weight, systolic, diastolic,
+            patient_name, device_serial
+        )
+    except Exception as e:
+        print(f"[!] Error generating report for user {username}: {e}")
+        raise HTTPException(status_code=500, detail="Error generating report")
+
+    return FileResponse("./temp/health_report.pdf", filename="health_report.pdf", media_type="application/pdf")
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
@@ -320,6 +351,24 @@ async def logout(request: Request):
     response = RedirectResponse(url="/login", status_code=302)
     response.delete_cookie(key="sessionId")
     return response
+
+@app.get("/api/user/{username}")
+async def get_user_data(username: str, request: Request):
+    if await verify_user(username, request):
+        user = await get_user_by_username(username)
+        if user:
+            # Only return selected fields (avoid password or sensitive data)
+            return JSONResponse(content={
+                "username": user["username"],
+                "first_name": user["first_name"],
+                "last_name": user["last_name"],
+                "email": user["email"],
+                "serial_num": user["serial_num"]
+            })
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    else:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
 if __name__ == "__main__":
     uvicorn.run(app="app.main:app", host="0.0.0.0", port=6543, reload=False)

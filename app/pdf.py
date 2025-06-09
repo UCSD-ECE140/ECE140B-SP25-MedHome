@@ -2,9 +2,15 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 import os
 from datetime import date
+import glob
 
 def generate_health_report(dates, bpm, spo2, weight, systolic, diastolic, patient_name, device_serial):
     output_dir = "./temp"
+    os.makedirs(output_dir, exist_ok=True)  # ✅ Create folder if it doesn't exist
+    
+    for f in glob.glob(os.path.join(output_dir, "*.png")):
+        os.remove(f)
+
 
     def create_plot(y_values, title, ylabel, filename, extra_y=None, extra_label=None):
         plt.figure(figsize=(4, 3))

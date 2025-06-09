@@ -5,6 +5,8 @@
   <title>Export</title>
   <link rel="stylesheet" href="/static/css/index.css">
   <link rel="shortcut icon" type="image/x-icon" href="../static/images/medhome_logo_notext.png" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://kit.fontawesome.com/04dadf6c21.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -29,30 +31,10 @@
 
   <!-- Main Content -->
   <div class="container">
-    <h2>Data Points</h2>
-    <div class="data-list">
-      <div class="data-item">
-        <label for="bp">Blood Pressure</label>
-        <input type="checkbox" id="bp" name="bp">
-      </div>
-      <div class="data-item">
-        <label for="spo2">O2</label>
-        <input type="checkbox" id="spo2" name="spo2">
-      </div>
-      <div class="data-item">
-        <label for="hr">HR</label>
-        <input type="checkbox" id="hr" name="hr">
-      </div>
-      <div class="data-item">
-        <label for="weight">Weight</label>
-        <input type="checkbox" id="weight" name="weight">
-      </div>
-    </div>
-
     <form class="export-form">
       <label for="export-title">Title:</label>
       <input type="text" id="export-title" name="export-title" required>
-      <button type="submit">Export</button>
+      <button id="downloadPDF" type="submit">Export</button>
     </form>
   </div>
   <script src="/static/js/export.js"></script>

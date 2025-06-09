@@ -1,3 +1,5 @@
+const { jsPDF } = window.jspdf;
+
 // Get the current URL of the webpage
 const currentUrl = window.location.href;
 
@@ -34,10 +36,38 @@ logoutForm.addEventListener('click', function (event) {
     .catch(error => console.error('Error:', error));
 });
 
-document.querySelector(".export-form").addEventListener("submit", function (e) {
+document.querySelector(".export-form").addEventListener("submit", async function (e) {
     e.preventDefault();
+
     const title = document.getElementById("export-title").value;
-    const selected = Array.from(document.querySelectorAll(".data-list input:checked")).map(input => input.name);
-    alert(`Exporting: ${selected.join(", ")}\nTitle: ${title}`);
-    // You can replace this alert with an actual fetch() or form submission
+
+    const currentUrl = window.location.href;
+    const username = currentUrl.split('/').pop();
+
+    try {
+        const response = await fetch(`/export/user/${username}`, {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            alert("Failed to export report. Please try again later.");
+            console.error("Export failed with status:", response.status);
+            return;
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${title || "health_report"}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+        console.error("Export failed:", err);
+        alert("An error occurred while exporting the report.");
+    }
 });

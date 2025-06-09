@@ -1,7 +1,27 @@
 // Get the current URL of the webpage
 const currentUrl = window.location.href;
-
 username = currentUrl.split('/').pop();
+
+fetch(`/api/user/${username}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Unauthorized or user not found");
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("User Data:", data);
+    // Example: display first name
+    document.getElementById("firstName").textContent = "First Name: " + data.first_name;
+    document.getElementById("lastName").textContent = "Last Name: " + data.last_name;
+    document.getElementById("user-email").textContent = "Email: " + data.email;
+    document.getElementById("registered-device").textContent = "Registered Device: " + data.serial_num;
+    document.getElementById("user-name").textContent = "Username: " + data.username;
+    document.getElementById("registered-device").textContent = "Registered Device: " + data.serial_num;
+  })
+  .catch(error => {
+    console.error("Error fetching user data:", error);
+  });
 
 // Get the elements by their classname and set their href attributes
 dashboardLink = document.querySelector('.dashboard-link');

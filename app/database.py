@@ -204,7 +204,7 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
             try:
                 print("Adding data !"); 
                 insert_query = """
-                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD) VALUES ("alice", "MH-830B35DF", %s, %s, %s, %s, %s); 
+                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ("alice", "MH-830B35DF", %s, %s, %s, %s, %s, %s);
                 """; 
 
                 for i in range(7): 
@@ -213,9 +213,10 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                     rand_weight = random.randrange(150, 155); 
                     rand_bpS = random.randrange(115, 120); 
                     rand_bpD = random.randrange(75, 80); 
+                    sequential_date = f"2025-01-{i+1} 00:00:00";
                     
-                    cursor.execute(insert_query, (rand_avgHR, rand_avgSpO2, rand_weight, rand_bpS, rand_bpD)); 
-            
+                    cursor.execute(insert_query, (rand_avgHR, rand_avgSpO2, rand_weight, rand_bpS, rand_bpD, sequential_date)); 
+
                 connection.commit(); 
 
             except Error as e:
@@ -524,7 +525,7 @@ async def get_data_from_user(username: str):
     try:
         connection = get_db_connection(); 
         cursor = connection.cursor(); 
-        cursor.execute("SELECT avgHR, avgSpO2, weight, bpS, bpD from data where username = %s;", (username,)); 
+        cursor.execute("SELECT avgHR, avgSpO2, weight, bpS, bpD, created_at from data where username = %s;", (username,)); 
 
         return cursor.fetchall(); 
 
