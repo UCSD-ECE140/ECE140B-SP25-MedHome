@@ -217,7 +217,23 @@ async def setup_database(initial_users: dict = None, initial_user_devices: dict 
                     
                     cursor.execute(insert_query, (rand_avgHR, rand_avgSpO2, rand_weight, rand_bpS, rand_bpD, sequential_date)); 
 
-                connection.commit(); 
+                logger.info("Inserted initial data for user 'alice' with random values");
+                
+                # Insert data for user 'bob'
+                insert_query = """
+                INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD, created_at) VALUES ("bob", "MH-EAF7EF67", %s, %s, %s, %s, %s, %s);
+                """;
+                for i in range(7):
+                    rand_avgHR = random.randrange(120, 150); 
+                    rand_avgSpO2 = random.randrange(80, 85); 
+                    rand_weight = random.randrange(150 + i*2, 155 + i*2);
+                    rand_bpS = random.randrange(115, 120); 
+                    rand_bpD = random.randrange(90, 95); 
+                    sequential_date = f"2025-02-{i+1} 00:00:00";
+                    
+                    cursor.execute(insert_query, (rand_avgHR, rand_avgSpO2, rand_weight, rand_bpS, rand_bpD, sequential_date));
+                logger.info("Inserted initial data for user 'bob' with random values");
+                connection.commit();
 
             except Error as e:
                 logger.error(f"Error inserting initial data: {e}")
