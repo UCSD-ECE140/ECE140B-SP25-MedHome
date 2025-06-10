@@ -144,7 +144,7 @@ async def avgHRavgSpO2weightbpSbpD(request: Request):
         return {"error": "Missing one or more required fields."}
     # You can add database storage or processing here if needed
 
-    add_data_to_user(get_user_by_serial_num(data["serial_number"]), data)
+    await add_data_to_user(await get_user_by_serial_num(data["serial_number"]), data)
     
     return {
             "message": "Data received successfully",
