@@ -514,7 +514,7 @@ async def add_data_to_user(username: str, data: dict) -> bool:
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
-                username,
+                username.get("username"),
                 data.get("serial_num"),
                 data.get("avgHR"),
                 data.get("avgSpO2"),
