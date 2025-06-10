@@ -510,7 +510,7 @@ async def add_data_to_user(username: str, data: dict) -> bool:
         cursor = connection.cursor()
         cursor.execute(
             """
-            INSERT INTO data (user_name, serial_num, avgHR, avgSpO2, weight, bpS, bpD)
+            INSERT INTO data (username, serial_num, avgHR, avgSpO2, weight, bpS, bpD)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
