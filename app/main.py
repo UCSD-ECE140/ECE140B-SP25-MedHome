@@ -76,7 +76,7 @@ INIT_USER_DEVICES = {
     ("bob", "MH-EAF7EF67")
 }
 
-INIT_DEVICES = [generate_serial_number() for i in range(2)]
+INIT_DEVICES = [generate_serial_number() for i in range(20)]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -133,7 +133,11 @@ async def read_root(request: Request):
 
 @app.post("/avgHRavgSpO2weightbpSbpD")
 async def avgHRavgSpO2weightbpSbpD(request: Request):
-    data = await request.json()
+    print(request)
+    try:
+        data = await request.json()
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"error": f"Invalid JSON: {str(e)}"})
     # Validate required fields
     required_fields = ["serial_number", "avgHR", "avgSpO2", "weight", "bpS", "bpD"]
     if not all(field in data for field in required_fields):
