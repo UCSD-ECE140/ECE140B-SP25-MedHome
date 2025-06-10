@@ -139,16 +139,16 @@ async def avgHRavgSpO2weightbpSbpD(request: Request):
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": f"Invalid JSON: {str(e)}"})
     # Validate required fields
-    required_fields = ["serial_number", "avgHR", "avgSpO2", "weight", "bpS", "bpD"]
+    required_fields = ["serial_num", "avgHR", "avgSpO2", "weight", "bpS", "bpD"]
     if not all(field in data for field in required_fields):
         return {"error": "Missing one or more required fields."}
     # You can add database storage or processing here if needed
 
-    await add_data_to_user(await get_user_by_serial_num(data["serial_number"]), data)
+    await add_data_to_user(await get_user_by_serial_num(data["serial_num"]), data)
     
     return {
             "message": "Data received successfully",
-            "serial_number": data["serial_number"],
+            "serial_num": data["serial_num"],
             "avgHR": data["avgHR"],
             "avgSpO2": data["avgSpO2"],
             "weight": data["weight"],
