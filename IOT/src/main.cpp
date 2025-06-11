@@ -8,17 +8,19 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define SERIAL_NUMBER 1 
 // Alice has device with serial number 1
 #define WIFI_TIMEOUT_MS 20000
 #define BUTTON_PIN 13
 #define HX711_DT 12
 #define HX711_SCK 14
+#define BP_BUTTON 27
 #define SAMPLE_BLOCK 100
 #define TOTAL_SAMPLES 500
-#define theSlope 1365.92567568
-#define theOffset 197995.84
+#define DISPLAY_TIME 2000
+#define theZero 53791880.00
+#define theRatio 300170.35
 
+String SERIAL_NUMBER = "MH-830B35DF"; 
 uint32_t irBuffer[SAMPLE_BLOCK];
 uint32_t redBuffer[SAMPLE_BLOCK];
 int pressed = 0;
@@ -31,7 +33,7 @@ HX711 theScale;
 AutoConnect portal;
 AutoConnectConfig config;
 
-void connectToWiFi() {
+bool connectToWiFi() {
   delay(100);
   Serial.print("Connecting to WiFi");
   config.autoReconnect = true;
@@ -42,6 +44,7 @@ void connectToWiFi() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("Connected to " + WiFi.SSID());
     Serial.println(WiFi.localIP());
+    return true; 
   }
   else {
     portal.begin();
@@ -54,13 +57,15 @@ void connectToWiFi() {
     if (WiFi.status() == WL_CONNECTED) {
       Serial.println("Connected to " + WiFi.SSID());
       Serial.println(WiFi.localIP());
+      return true; 
     } else {
       Serial.println("Failed to connect to WiFi");
+      return false; 
     }
   }
 }
 
-void postRequest(int avgHR, int avgSpO2, float weight, int bpS, int bpD) {
+bool postRequest(int avgHR, int avgSpO2, float weight, int bpS, int bpD) {
   const char* serverURL = "https://medhome.onrender.com/avgHRavgSpO2weightbpSbpD";
 
   HTTPClient http;
@@ -69,25 +74,36 @@ void postRequest(int avgHR, int avgSpO2, float weight, int bpS, int bpD) {
 
   // Create JSON payload
   String jsonData = "{";
-  jsonData += "\"serial_number\":" + String(SERIAL_NUMBER) + ","; 
+  jsonData += "\"serial_num\": \"" + String(SERIAL_NUMBER) + "\","; 
   jsonData += "\"avgHR\":" + String(avgHR) + ",";
   jsonData += "\"avgSpO2\":" + String(avgSpO2) + ",";
   jsonData += "\"weight\":" + String(weight) + ",";
   jsonData += "\"bpS\":" + String(bpS) + ",";
   jsonData += "\"bpD\":" + String(bpD);
   jsonData += "}";
-
+  Serial.println(jsonData); 
   // Send POST request
   int httpResponseCode = http.POST(jsonData);
 
-  // Print the response
-  Serial.print("HTTP Response code: ");
-  Serial.println(httpResponseCode);
-  String response = http.getString();
-  Serial.println(response);
-  delay(750);
+  Serial.println(httpResponseCode); 
 
-  http.end();
+  if(httpResponseCode != 200) {
+    http.end(); 
+    return false;  
+  }
+
+  else {
+    // Print the response
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    String response = http.getString();
+    Serial.println(response);
+    delay(750);
+
+    http.end();
+
+    return true; 
+  }
 }
 
 void getRequest() {
@@ -163,14 +179,20 @@ void readWeight(float &weight) {
   for(int i = 0; i <= sampleRate; i++) { // Read weight scale until reached sample count, TOTAL_SAMPLES
     theReading = theScale.read(); 
     totalValue += abs(theReading);
-    Serial.println(totalValue);  
+    // Serial.println(totalValue);  
     delay(10); 
   }
 
-  weight = ((totalValue/sampleRate) - theOffset) / theSlope; 
+  weight = (totalValue - theZero)/theRatio; 
+  Serial.println(weight); 
 }
 
 void readBP(int &bpS, int &bpD) {
+    digitalWrite(BP_BUTTON, HIGH); 
+    delay(500); 
+    digitalWrite(BP_BUTTON, LOW); 
+    delay(1000 * 60); // Wait a minute
+
     Serial.println("120 / 80");
     bpS = 120;
     bpD = 80;
@@ -191,15 +213,26 @@ void checkAddress() {
 
 void setup() {
   // put your setup code here, to run once:
-  delay(2000); 
+  delay(1000); 
   Serial.begin(115200);
+  delay(1000); 
   Wire.begin(); // SDA, SCK 
   // checkAddress(); 
-  connectToWiFi();
   LCDSetup(); 
-  delay(500); 
+  delay(1000); 
+
+  lcd.setCursor(0, 0);
+  lcd.print("Connecting to");
+  lcd.setCursor(0, 1);
+  lcd.print("WiFi...");
+
+  while(!connectToWiFi()); 
+  delay(DISPLAY_TIME);
+  lcd.clear();
+
   Serial.begin(115200);
   pinMode(BUTTON_PIN, INPUT); // Active LOW button
+  pinMode(BP_BUTTON, OUTPUT); 
 
   if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) {
     Serial.println("MAX30102 not found. Check wiring."); 
@@ -214,27 +247,35 @@ void setup() {
   lcd.print("Device Setup ");
   lcd.setCursor(0, 1);
   lcd.print("Completed.");
-  delay(1000);
+  delay(DISPLAY_TIME);
   lcd.clear();
+
+  lcd.setCursor(0, 0);
+  lcd.print("Press button");
+  lcd.setCursor(0, 1);
+  lcd.print("to begin."); 
 }
 
 void loop() {
   pressed = digitalRead(BUTTON_PIN); 
-  
+
   if (pressed == HIGH) {
+    lcd.clear(); 
     int avgHR = 0, avgSpO2 = 0, bpS = 0, bpD = 0;
     float weight = 0; 
     Serial.println("Beginning Analysis");
     lcd.setCursor(0, 0);
-    lcd.print("Beginning Analysis");
-    delay(1000);
+    lcd.print("Beginning");
+    lcd.setCursor(0, 1); 
+    lcd.print("Analysis"); 
+    delay(DISPLAY_TIME);
     lcd.clear();
 
     lcd.setCursor(0, 0);
-    lcd.print("Reading Heartrate");
+    lcd.print("Reading Oxygen");
     Serial.println("Reading Heartrate");
     lcd.setCursor(0, 1);
-    lcd.print("Reading Oxygen");
+    lcd.print("and Heartrate");
     Serial.println("Reading Oxygen");
     delay(1000);
     readVitalsAverage(avgHR, avgSpO2);
@@ -261,7 +302,7 @@ void loop() {
     Serial.print("Average Heart Rate (BPM): ");
     lcd.print(avgHR);
     Serial.println(avgHR);
-    delay(1000);
+    delay(DISPLAY_TIME);
     lcd.clear();
 
     lcd.setCursor(0, 0);
@@ -269,7 +310,7 @@ void loop() {
     Serial.print("Average SpO₂ (%): ");
     lcd.print(avgSpO2);
     Serial.println(avgSpO2);
-    delay(1000);
+    delay(DISPLAY_TIME);
     lcd.clear();
 
     lcd.setCursor(0, 0);
@@ -277,14 +318,58 @@ void loop() {
     Serial.print("Weight: ");
     lcd.print(weight);
     Serial.println(weight);
-    delay(1000);
+    delay(DISPLAY_TIME);
     lcd.clear();
 
     lcd.setCursor(0, 0);
     lcd.print("Blood Pressure: ");
+    lcd.setCursor(0, 1); 
+    lcd.print(bpS); 
+    lcd.print("/"); 
+    lcd.print(bpD); 
     Serial.print("Blood Pressure: ");
+    delay(DISPLAY_TIME); 
+    lcd.clear(); 
  
-    postRequest(avgHR, avgSpO2, weight, bpS, bpD);
+    bool checkPost = postRequest(avgHR, avgSpO2, weight, bpS, bpD);
+
+    int attemptCount = 0; 
+    while(!checkPost) {
+      Serial.println("Data sent unsuccessfully."); 
+      lcd.setCursor(0, 0); 
+      lcd.print("Data failed"); 
+      lcd.setCursor(0, 1); 
+      lcd.print("to send."); 
+      delay(DISPLAY_TIME); 
+      lcd.clear(); 
+
+      lcd.setCursor(0, 0); 
+      lcd.print("Trying to"); 
+      lcd.setCursor(0, 1); 
+      lcd.print("send again."); 
+      delay(DISPLAY_TIME); 
+      lcd.clear(); 
+
+      checkPost = postRequest(avgHR, avgSpO2, weight, bpS, bpD);
+
+      attemptCount++; 
+      if (attemptCount > 10) {
+        Serial.println("Succesfully sent data to server."); 
+        lcd.setCursor(0, 0); 
+        lcd.print("Timeout, please"); 
+        lcd.setCursor(0, 1); 
+        lcd.print("restart device."); 
+        delay(DISPLAY_TIME); 
+        while(1); 
+      }
+    }
+
+    Serial.println("Succesfully sent data to server."); 
+    lcd.setCursor(0, 0); 
+    lcd.print("Data sent"); 
+    lcd.setCursor(0, 1); 
+    lcd.print("succesfully!"); 
+    delay(DISPLAY_TIME); 
 
     delay(1000);
   } 
