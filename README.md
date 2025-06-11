@@ -5,7 +5,7 @@ MedHome – Smart Health Chair
    <img src="https://github.com/user-attachments/assets/33afbcc2-becf-491b-bcc4-d98b475f572d" width=500px/>
 </p>
 
-Welcome to **MedHome**, a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic! This project is being developed for UCSD's ECE140B (Spring 2025) and aims to provide accessible, real-time health monitoring with the help of IoT and AI. 🚀
+Welcome to **MedHome**, a smart, sensor-integrated chair designed to monitor your vital signs from the comfort of your home or clinic! This project is being developed for UCSD's ECE140B (Spring 2025) and aims to provide accessible, real-time health monitoring with the help of IoT and smart data analysis. 🚀
 
 ---
 
@@ -19,10 +19,10 @@ Imagine a chair that doubles as a medical diagnostic device. The **ideal MedHome
 
 All collected data is:
 
-- 📡 Transmitted via WiFi (Raspberry Pi)
+- 📡 Transmitted via WiFi (ESP32)
 - 💽 Stored in a backend database
 - 📊 Visualized on a sleek web app
-- 🧠 Interpreted by an LLM API for anomaly detection
+- 🧠 Data analytics algorithms for health feedback
 - 👨‍⚕️ Used to notify the user and optionally consult a doctor
 
 ---
@@ -32,12 +32,12 @@ All collected data is:
 For this quarter, our MVP includes:
 
 ### ✅ Hardware
-- Raspberry Pi microcontroller
+- ESP32 microcontroller
 - Connected oximeter, scale, and BP monitor
-- Basic frame or chair mount for all devices
+- Basic portable kit for all devices
 
 ### ✅ Software
-- Raspberry Pi sends data via MQTT over WiFi
+- ESP32 sends data via RESTfulAPI over WiFi
 - Backend stores user & health data
 - Web app displays vitals & graphs
 - Basic user authentication & login
@@ -47,23 +47,19 @@ For this quarter, our MVP includes:
 ## 🧰 Required Technologies
 
 ### 📟 Electronics
-- Oximeter
-- Scale
+- MAX30102 Oximeter
+- HX711 Scale
 - Blood Pressure Monitor
-- Raspberry Pi (for WiFi & sensor integration)
-- Communication protocols: SPI / I2C / UART
+- ESP32 (for WiFi & sensor integration)
+- Communication protocols: I2C
 
 ### 🖧 IOT Diagram
 ![Software_Flow](https://github.com/user-attachments/assets/a7d054f8-ad7b-44a9-a929-303ac8f96739)
 
-### 🔌Wiring Diagrams
-![image](https://github.com/user-attachments/assets/816134a4-8f80-43ed-8bed-1a683591c899)
-
 ### 🌐 Software
-- MQTT for real-time data transport
 - Database (SQL or NoSQL) for storage
 - Web App (HTML/CSS/JS, React, or Flask/Node/FastAPI)
-- LLM API (e.g., OpenAI or similar) to analyze trends
+- Custom data analytic algorithms to analyze trends
 - Optional: Doctor consultation interface
 
 ---
@@ -145,30 +141,6 @@ We aim to help two key groups:
 
 ---
 
-## 📌 Project Status
-
-> 🚧 Actively being developed (Spring 2025)
-
-Want to follow the journey? Star this repo and check back for updates!
-
----
-
 # Parts List
 <a href = "https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing" target = "_blank">
 https://docs.google.com/spreadsheets/d/1Vw-dRWdZHSxFF3NrVBZzRUBWk4LhnQSCr9qGEEaQ7Oo/edit?usp=sharing 
-
-# Iru Kumi's
-Week 2: <br>
-Who is the customer? <br>
-The target market would be people who need constant checkups, such as the elderly or those with underlying health issues. This means our product would really be focused on medical institutions such as nursing homes or hospitals, while also working with insurance companies and complying with any health laws or acts.  <br>
-
-What is their need? <br>
-The customer need is to have a quick, reliable, and efficient way to take and track their vitals. Additionally it will allow customers to track their health data and allow for data analysis which can then recognize and inform of any potential health complications. <br>
-
-What is the problem our idea will address? <br>
-The problem we are addressing is reducing overall time consumption of a simple check in and preventing data waste (i.e. ensuring patient data is saved, tracked, and analyzed consistently). <br>
-
-How is our solution IOT worthy? <br>
-Our solution is IOT worthy as it makes use of medical instruments that measure vitals such as oximeters, blood pressure monitors, and scales, in conjuction with a central system that is able to send data to a database for easy tracking and analysis which is essential for ones health. <br>
-
-
